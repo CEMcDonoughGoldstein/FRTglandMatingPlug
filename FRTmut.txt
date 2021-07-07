@@ -1,0 +1,353 @@
+Fly	Cross	eye	Cop_start	Cop_end	Duration	Mate	Freeze	Freeze_Day	Freeze_Time	1Egg	1Hatch	2Egg	2Hatch	3Egg	3Hatch	4Egg	4Hatch	DiedEarly	NoYeastFirst	MaybeMixUp	ReasonExclude	eye2	ST	PO	Plug	Egg	SRsperm	STsperm1	STsperm2	FRTabnormal	EyeMismatch	AnnotationMixup	EggOviduct	EggDegen	NoSpermXfer	ExcludeMismatch
+1	63x64	dent	9:28	10:08	0:40	Y	96	19		74	44	28	16	13	9	49	34	N	N	N	N	dent	2	0	N	N	6	30	50	N	N	N	N	N	N	N
+2	63x64	dent	9:04	9:36	0:32	Y	96	19		64	32	0	0	42	39	0	0	N	N	N	N	dent	2	0	N	N	6	42	26	N	N	N	N	N	N	N
+3	63x64	dent	11:47	12:21	0:34	Y	48	17	15:20	43	36	14	10					N	N	N	N	dent	2	0	N	N	2	75	41	N	N	N	N	N	N	N
+4	63x64	dent	9:47	10:33	0:46	Y	72	18	12:35	28	18	0	0	1	1			N	N	N	N	dent	2	0	N	N	29	40								N
+5	63x64	dent	10:11	10:56	0:45	Y	96	19		57	30	0	0	1	1	4	3	N	N	N	N	dent	2	0	N	N	26									N
+6	63x64	dent	9:22	9:54	0:32	Y	96	19		57	39	0	0	19	19	6	5	N	N	N	N	dent	2	0	N	N	33	49	64	N	N	N	N	N	N	N
+7	63x64	dent	9:40	10:18	0:38	Y	72	18	12:35	68	32	22	15	0	0			N	N	N	N	dent	1	0	N	N	22	35		Y	N	N	N	N	N	N
+8	63x64	dent	9:36	10:08	0:32	Y	96	19		56	37	0	0	1	1	29	15	N	N	N	N	dent	2	0	N	N	34	56	54	N	N	N	N	N	N	N
+9	63x64	dent	9:32	10:08	0:36	Y	96	19		48	33	0	0	1	1	11	4	N	N	N	N	dent	2	0	N	N	230	64	65	N	N	N	N	N	N	N
+10	63x64	dent	12:42	13:19	0:37	Y	48	17	15:20	0	0	0	0					N	Y	N	Y	WT	2	0	N	N	350	63	82	N	Y	N	N	N	N	N
+11	63x64	dent	9:17	9:54	0:37	Y	96	19		46	17	0	0	0	0	1	0	N	N	N	N	dent	2	0	N	N	320	22	51	N	N	N	N	N	N	N
+12	63x64	dent	9:22	9:59	0:37	Y	96	19		56	23	0	0	68	22	35	27	N	N	N	N	dent	2	0	N	N	1	23	53	N	N	N	N	N	N	N
+13	63x64	dent	9:17	9:54	0:37	Y	96	19		54	34	0	0	58	48	1	1	N	N	N	N	dent	2	0	N	N	4	21	79	N	N	N	N	N	N	N
+14	63x64	dent	11:10	11:43	0:33	Y	6	15	17:45	0	0							N	N	N	N	dent	2	0	N	N	492	60	75	N	N	N	N	N	N	N
+15	63x64	dent	9:10	9:47	0:37	Y	96	19		68	51	0	0	0	0	1	1	N	N	N	N	dent	2	0	N	N	32	36	24	N	N	N	N	N	N	N
+16	63x64	dent	9:39	10:11	0:32	Y	72	18	12:35	39	24	0	0	0	0			N	N	N	N	dent	2	0	N	N	298	22	19	N	N	N	N	N	N	N
+17	63x64	dent	9:18	9:49	0:31	Y	96	19		31	13	0	0	9	6	0	0	N	N	N	N	dent	2	0	N	N	187	54	35	N	N	N	N	N	N	N
+18	63x64	dent	12:21	12:52	0:31	Y	2	15	14:50	0	0							N	Y	N	Y	dent	2	0	Y	N	518			N	N	N	N	N	N	N
+19	63x64	dent	11:10	11:38	0:28	Y	6			0	0							N	N	N	N	dent	2	0	N	N	334	48	65	N	N	N	N	N	N	N
+20	63x64	dent	12:34	13:06	0:32	Y	2	15	15:12	0	0							N	Y	N	Y	dent	2	0	Y	N				N	N	N	N	N	N	N
+21	63x64	dent	10:08	11:03	0:55	Y	24	16	11:40	48	26							N	N	N	N	dent	2	0	N	N	366	78	86	N	N	N	N	N	N	N
+22	63x64	dent	10:28	11:10	0:42	Y	24	16	11:40	41	23							N	N	N	N	dent	2	0	N	Y	341			N	N	N	N	N	N	N
+23	63x64	dent	9:26	10:08	0:42	Y	72	18	12:35	44	26	0	0	30	14			N	N	N	N	dent	2	0	N	N	28	15	37	N	N	N	N	N	N	N
+24	63x64	dent	9:51	10:29	0:38	Y	72	18	12:35	44	21	1	1	0	0			N	N	N	N	dent	2	0	N	N	119	107	64	N	N	N	N	N	N	N
+25	63x64	dent	9:43	10:28	0:45	Y	72	18	12:35	30	23	52	32	20	12			N	N	N	N	dent	2	0	N	Y	96	14	125	N	N	N	N	N	N	N
+26	63x64	dent	10:52	11:28	0:36	Y	6	15	17:40	7	1							N	N	N	N	dent	2	0	N	Y	396	29	51	N	N	N	N	N	N	N
+27	63x64	dent	9:59	10:48	0:49	Y	24	16	11:40	38	6							N	N	N	N	dent	2	0	N	N	300	75	89	N	N	N	N	N	N	N
+28	63x64	dent	9:22	9:59	0:37	Y	96	19		48	30	0	0	24	16	0	0	N	N	N	N	dent	2	0	N	N	268	75	68	N	N	N	N	N	N	N
+29	63x64	dent				N												N	N	N	N															N
+30	63x64	dent	9:33	10:08	0:35	Y	96	19		48	26	17	16	1	1	0	0	N	N	N	N															N
+31	63x64	dent	9:40	10:42	1:02	Y	72	18	12:35	38	34	0	0	1	0			N	N	N	N	dent	2	0	N	N	7	60	58	N	N	N	N	N	N	N
+32	63x64	dent	9:22	9:59	0:37	Y	96	19		59	56	0	0	57	40	0	0	N	N	N	N	dent	2	0	N	N	276	52	72	N	N	N	N	N	N	N
+33	63x64	dent	10:29	11:10	0:41	Y	24	16	11:40	53	24							N	N	N	N	dent	2	0	N	N	388	24	78	N	N	N	N	N	N	N
+34	63x64	dent	9:22	9:56	0:34	Y	96	19		53	28	2	0	0	0	62	46	N	N	N	N	dent	2	0	N	N	0	40		N	N	N	N	N	N	N
+35	63x64	dent	10:22	11:03	0:41	Y	24	16	11:40	38	19							N	N	N	N	dent	2	0	N	N	200	79	91	N	N	N	N	N	N	N
+36	63x64	dent	9:17	9:47	0:30	Y	96	19		31	14	0	0	0		0	0	N	N	N	N	dent	2	0	N	N	238	29	58	N	N	N	N	N	N	N
+37	63x64	dent	9:36	10:08	0:32	Y	96	19		38	36	0	0	44	31	35	26	N	N	N	N	dent	2	0	N	Y	92	48	37	N	N	N	N	N	N	N
+38	63x64	dent	9:26	10:03	0:37	Y	96	19		26	15	0	0	1	0	28	20	N	N	N	N	dent	2	0	N	N	269	24	48	N	N	N	N	N	N	N
+39	63x64	dent	12:37	13:15	0:38	Y	48	17	15:30	0	0	0	0					N	Y	N	Y	dent	2	0	Y	N	315	55	65	N	N	N	N	N	N	N
+40	63x64	dent	10:22	11:03	0:41	Y	24	16	11:40	45	32							N	N	N	N	dent	2	0	N	Y	300	107		N	N	N	N	N	N	N
+41	63x64	dent	9:51	10:29	0:38	Y	72	18	12:35	35	22	0	0	41	24			N	N	N	N	dent	2	0	N	N	210	46	56	N	N	N	N	N	N	N
+42	63x64	dent	10:43	11:28	0:45	Y	6	15	17:40	0	0	47						N	N	N	N	dent	2	0	N	N	485	92	97	N	N	N	N	N	N	N
+43	63x64	dent	9:26	10:06	0:40	Y	96	19		39	28	0	0	47	28	0	0	N	N	N	N	dent	2	0	N	N	173	43	12	N	N	Y	N	N	N	N
+44	63x64	dent				N												N	N	N	N															N
+45	63x64	dent	11:24	11:58	0:34	Y	6	15	18:05	0	0							N	N	N	N	dent	2	0	N	N	448	88	86	N	N	N	N	N	N	N
+46	63x64	dent	12:34	13:07	0:33	Y	2	15	15:12	0	0							N	N	N	N	dent	2	0	Y	N				N	N	N	N	N	N	N
+47	63x64	dent	10:48	11:29	0:41	Y	6	15	17:40	0	0							N	N	N	N	dent	2	0	N	N	476	78	94	N	N	N	N	N	N	N
+48	63x64	dent	10:49	11:19	0:30	Y	24	16	11:40	44	24							N	N	N	N	dent	2	0	N	N	279	90	90	N	N	N	N	N	N	N
+49	63x64	dent	12:16	12:45	0:29	Y	2	15	14:50	0	0							N	N	N	N	dent	2	0	Y	N				N	N	N	N	N	N	N
+50	63x64	dent	13:26	13:56	0:30	Y	48	17	15:30	21	17	0	0					N	N	N	N	WT	2	0	N	Y	287	14	14	N	Y	N	Y	N	N	N
+51	63x64	dent	13:42	14:12	0:30	Y	48	17	15:30	0	0	0	0					N	Y	N	Y	dent	2	0	N	Y	381	79	27	N	N	N	Y	N	N	N
+52	63x64	dent				N												N	N	N	N															N
+53	63x64	dent	10:57	11:44	0:47	Y	6	15	17:45	0	0							N	N	N	N	dent	2	0	N	N	366	60	20	N	N	N	N	N	N	N
+54	63x64	dent	10:38	11:14	0:36	Y	24	16	11:40	29	16							N	N	N	N	dent	2	0	N	N	363	96	81	N	N	N	N	N	N	N
+55	63x64	dent	10:57	11:29	0:32	Y	6	15	17:40	0	0							N	N	N	N	dent	2	0	N	N	438	87	80	N	N	N	N	N	N	N
+56	63x64	dent	11:40	12:18	0:38	Y	48	17	15:30	33	18	0	0					N	N	N	N	dent	2	0	N	Y	231	56	66	N	N	N	Y	N	N	N
+57	63x64	dent	9:39	10:08	0:29	Y	96	19		42	18	0	0	0	0	53	19	N	N	N	N	dent	2	0	N	N	113	39	46	N	N	N	N	N	N	N
+58	63x64	dent	14:38	15:20	0:42	Y	48	17	15:30	45	32	0	0					N	N	N	N	WT	2	0	N	N	14	107	56	N	Y	N	N	N	N	N
+59	63x64	dent	12:17	12:41	0:24	Y	2	15	14:50	0	0							N	Y	N	Y															N
+60	63x64	dent	12:38	13:09	0:31	Y	2	15	15:12	0	0							N	Y	N	Y															N
+61	63x64	dent	13:16	13:50	0:34	Y	48	17	15:30	0	0	0	0					N	Y	N	Y	dent	2	0	Y	N	312	77	14	N	N	N	N	N	N	N
+62	63x64	dent	11:44	12:22	0:38	Y	48	17	15:10	0	0	0	0					N	Y	N	Y	dent	2	0	N	N	416	9	90	N	N	N	N	N	N	N
+63	63x64	dent	15:07	15:30	0:23	Y	48	17	15:30	32	19	0	0					N	N	N	N	dent	2	0	Y	N	329	5	67	N	N	N	N	N	N	N
+64	63x64	dent	12:13	12:40	0:27	Y	2	15	14:50	0	0							N	N	N	N															N
+65	63x64	dent	10:38	11:09	0:31	Y	24	16	11:40	67	53							N	N	N	N	dent	2	0	N	Y	342	77	107	N	N	N	N	N	N	N
+66	63x64	dent	10:16	10:52	0:36	Y	72	18	12:35	0	0	0	0	1	1			N	N	N	N	dent	2	0	N	N		52	58	N	N	N	N	N	N	N
+67	63x64	dent	9:43	10:19	0:36	Y	72	18	12:35	65	30	0	0	35	16			N	N	N	N	dent	2	0	N	N	109	87	108	N	N	N	N	N	N	N
+68	63x64	dent	9:43	10:22	0:39	Y	72	18	12:35	18	16	0	0	5	2			N	N	N	N	WT	0	0	N	N	106			N	Y	N	N	N	N	Y
+69	63x64	dent	10:48	11:33	0:45	Y	24	16	11:40	39	10							N	N	N	N	dent	2	0	N	Y	358	4	86	N	N	N	N	N	N	N
+70	63x64	dent	10:24	11:03	0:39	Y	24	16	11:40	61	36							N	N	N	N	dent	2	0	N	N	294	78	105	N	N	N	N	N	N	N
+71	63x64	dent	12:53	13:29	0:36	Y				0	0							Y	Y	N	Y	dent	2	0	N	N	427	18	85	N	N	Y	N	N	N	N
+72	63x64	dent	11:03	11:29	0:26	Y	6	15	17:40	0	0							N	N	N	N	dent	2	0	N	N	309	16	113	N	N	Y	N	N	N	N
+73	63x64	dent	9:54	10:25	0:31	Y	72	18	12:35	35	23	0	0	1	1			N	N	N	N	dent	2	0	N	N	23	98	71	N	N	N	N	N	N	N
+74	63x64	dent	9:43	10:23	0:40	Y	72	18	12:35	38	15	24	8	0	0			N	N	N	N	dent	2	0	N	N	304	111	77	N	N	N	N	N	N	N
+75	63x64	dent	10:23	10:57	0:34	Y	24	16	11:40	45	35							N	N	N	N															N
+76	63x64	dent	9:47	10:30	0:43	Y	72	18	12:35	58	34	0	0	0	0			N	N	N	N	dent	2	0	N	N	56	86	95	N	N	N	N	N	N	N
+77	63x64	dent	10:03	10:43	0:40	Y	72	18	12:35	54	25	0	0	31	13			N	N	N	N	dent	2	0	N	Y	10	56	47	N	N	N	N	Y	N	N
+78	63x64	dent	9:54	10:30	0:36	Y				44	13	0	0					Y	Y	N	Y															N
+79	63x64	dent	12:23	12:53	0:30	Y	2	15	14:50	0	0							N	N	N	N															N
+80	63x64	dent	13:56	14:22	0:26	Y	48	17	15:30	0	0	23	6					N	N	N	N	dent	2	0	N	N	255	73	61	N	N	N	N	N	N	N
+81	63x64	dent				N												N	N	N	N															N
+82	63x64	dent	10:38	11:19	0:41	Y	24	16	11:40	58	19							N	N	N	N	dent	2	0	N	Y	305	63	95	N	N	N	N	N	N	N
+83	63x64	dent	11:12	11:53	0:41	Y	6	15	18:05	0	0							N	N	N	N	dent	2	0	N	Y	475	95	16	N	N	N	N	Y	N	N
+84	63x64	dent	10:01	10:30	0:29	Y	72	18	12:35	67	40	0	0	64	41			N	N	N	N	dent	2	0	N	N	107	38	48	N	N	N	N	N	N	N
+85	63x64	dent	10:49	11:15	0:26	Y	24	16	11:40	53	24							N	N	N	N	dent	2	0	N	N	349	64	112	N	N	N	N	N	N	N
+86	63x64	dent	11:44	12:27	0:43	Y	48	17	15:30	61	42	0	0					N	N	N	N	dent	2	0	N	N	328	2	6	N	N	N	N	N	N	N
+87	63x64	dent	10:03	10:30	0:27	Y	72	18	12:35	59	43	0	0	4	3			N	N	N	N	dent	2	0	N	N	51	65	67	N	N	N	N	N	N	N
+88	63x64	dent	10:53	11:24	0:31	Y	24	16	11:40	42	17							N	N	N	N	dent	2	0	N	N	389	75	21	N	N	N	N	N	N	N
+89	63x64	dent				N												N	N	N	N															N
+90	63x64	dent	10:58	11:41	0:43	Y	72	18	12:35	67	43	0	0	45	25			N	N	N	N	dent	2	0	N	N	0	13	60	N	N	N	N	N	N	N
+91	63x64	dent	12:54	13:26	0:32	Y	48	17	15:30	52	34	0	0					N	N	N	N	dent	2	0	N	Y	217			N	N	N	N	N	N	N
+92	63x64	dent	12:30	13:00	0:30	Y	2	15	15:00	0	0							N	N	N	N															N
+93	63x64	dent	12:30	13:02	0:32	Y	2	15	15:00	0	0							N	N	N	N															N
+94	63x64	dent	10:53	11:19	0:26	Y	24	16	11:40	85	45							N	N	N	N	dent	2	0	N	Y	137	49	31	Y	N	N	N	N	N	N
+95	63x64	dent	13:11	13:47	0:36	Y	48	17	15:30	48	40	0	0					N	N	N	N	dent	2	0	N	N	11	68	59	N	N	N	N	N	N	N
+96	63x64	dent	14:06	14:38	0:32	Y	48	17	15:30	0	0	0	0					N	N	N	N	dent	2	0	N	Y	526	63	47	N	N	N	N	N	N	N
+97	63x64	dent	11:44	12:17	0:33	Y	72	18	12:35	0	0	0	0	29	9			N	N	N	N	dent	2	0	N	N	95	14	16	N	N	N	N	N	N	N
+98	63x64	dent	13:00	13:40	0:40	Y	48	17	15:30	59	40	0	0					N	N	N	N	dent	2	0	Y	N	11	88	65	N	N	N	N	N	N	N
+99	63x64	dent	10:20	10:53	0:33	Y	72	18	12:35	70	38	0	0	45	27			N	N	N	N	dent	2	0	N	N	232	56	70	N	N	N	N	N	N	N
+100	63x64	dent	10:31	11:09	0:38	Y	24	16	11:40	62	35							N	N	N	N	dent	2	0	N	N	326	38	83	N	N	N	N	N	N	N
+101	63x64	full	11:12	11:41	0:29	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N															N
+102	63x64	full	10:58	11:29	0:31	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	WT	0	0	Y	N	13			N	N	Y	N	N	N	N
+103	63x64	full	10:20	10:59	0:39	Y	72	18	12:35	60	29	64	60	13	12			N	N	N	N	WT	0	0	N	N	34			N	N	N	N	N	N	N
+104	63x64	full	10:17	10:53	0:36	Y	72	18	12:35	18	18	51	47	36	36			N	N	N	N	WT	0	0	N	Y	232			N	N	N	N	N	N	N
+105						N												N	N	N	N									N	N	N	N	N	N	N
+106	63x64	full	10:31	11:03	0:32	Y	24	16	11:40	45	43							N	N	N	N	WT	0	0	N	Y	2									N
+107	63x64	full	10:45	11:20	0:35	Y	6	15	17:30	0	0							N	N	N	N	dent	2	0	N	N	331	90	63	N	Y	N	N	N	N	Y
+108	63x64	full	11:16	11:50	0:34	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	WT	0	0	Y	Y	38									N
+109	63x64	full	10:23	10:53	0:30	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	WT	0	0	Y	Y	148									N
+110	63x64	full	11:36	12:13	0:37	Y	48	17	15:20	0	0	49	42					N	N	N	N	WT	0	0	Y	N	0			N	N	N	N	N	N	N
+111	63x64	full	10:34	11:09	0:35	Y	24	16	11:40	57	32							N	N	N	N	WT	0	0	N	Y	3			N	N	N	N	N	N	N
+112	63x64	full	12:32	13:06	0:34	Y	2	15	15:12	0	0							N	Y	N	Y															N
+113	63x64	full	10:45	11:16	0:31	Y	96	19		21	21	17	16	39	39	55	52	N	N	N	N	dent	2	0	N	Y	97	46	46	N	Y	Y	N	N	N	Y
+114	63x64	full	10:59	11:36	0:37	Y	96	19		0	0	2	2	0	0	0	0	N	N	N	N	dent	2	0	N	N	38	25	50	N	Y	N	N	N	N	Y
+115	63x64	full	10:34	11:09	0:35	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	N	Y	194			N	N	N	N	N	N	N
+116	63x64	full	10:34	11:08	0:34	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	N	Y	239			N	N	N	N	N	N	N
+117	63x64	full	10:39	11:12	0:33	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	N	304			N	N	N	N	N	N	N
+118	63x64	full	10:21	10:59	0:38	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	WT	0	0	Y	Y	92			Y	N	N	Y	N	N	N
+119	63x64	full	12:54	13:25	0:31	Y	48	17	15:20	45	28	65	65					N	N	N	N	WT	0	0	Y	Y	56			N	N	N	N	N	N	N
+120	63x64	full				N												N	N	N	N															N
+121	63x64	full	10:21	10:59	0:38	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	WT	0	0	Y	N	40			N	N	N	N	N	N	N
+122	63x64	full	10:45	11:12	0:27	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	N	154			N	N	N	N	N	N	N
+123	63x64	full	11:16	11:48	0:32	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	dent	2	0	N	N	329	23	37	N	Y	N	N	N	N	Y
+124	63x64	full	12:18	12:46	0:28	Y	2	15	15:00	0	0							N	Y	N	Y															N
+125	63x64	full	10:46	11:13	0:27	Y	72	18	12:35	33	28	53	42	41	41			N	N	N	N	WT	0	0	N	Y	59									N
+126	63x64	full	10:40	15:21	4:41	Y	48	17	15:20	0	0	0	0					N	N	N	N	WT	0	0	Y	Y	188									N
+127	63x64	full	11:25	12:09	0:44	Y	48	17	15:20	18	16	0	0					N	N	N	N	WT	0	0	N	Y	11			Y	N	N	N	N	N	N
+128	63x64	full	13:34	14:09	0:35	Y	48	17	15:20	0	0	75	61					N	Y	N	Y	WT	0	0	Y	Y	54									N
+129	63x64	full	10:46	11:13	0:27	Y	24	16	11:40	44	14							N	N	N	N	WT	0	0	N	Y	49			N	N	N	N	N	N	N
+130	63x64	full	10:35	11:08	0:33	Y	24	16	11:40	37	19							N	N	N	N	dent	2	1	N	N	429	129	99	N	Y	N	N	N	N	Y
+131	63x64	full	10:31	11:07	0:36	Y	24	16	11:40	0	0							N	N	N	N															N
+132	63x64	full	13:30	14:02	0:32	Y	48	17	15:20	29	29	65	62					N	N	N	N	WT	0	0	Y	Y	58			Y	N	N	N	N	N	N
+133	63x64	full	13:37	14:09	0:32	Y	48	17	15:20	0	0	49	44					N	Y	N	Y	WT	0	0	N	Y	226			N	N	N	N	N	N	N
+134	63x64	full	12:35	13:03	0:28	Y	2	15	15:00	0	0							N	N	N	N															N
+135	63x64	full				N												N	N	N	N															N
+136	63x64	full	10:40	11:20	0:40	Y	6	15	17:30	0	0							N	N	N	N	WT	0	0	Y	N	354			N	N	N	N	N	N	N
+137	63x64	full	11:25	12:09	0:44	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N															N
+138	63x64	full	10:46	11:16	0:30	Y				0	0							N	N	N	N															N
+139	63x64	full	10:54	11:25	0:31	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N															N
+140	63x64	full	10:50	11:20	0:30	Y	6	15	17:30	0	0							N	N	N	N	WT	0	0	Y	N	183			N	N	N	N	N	N	N
+141	63x64	full	11:00	11:21	0:21	Y	6	15	17:30	0	0							N	N	N	N	WT	0	0	Y	N	262			N	N	N	N	N	N	N
+142	63x64	full	10:50	11:17	0:27	Y	96	19		37	24	36	28	0	0	39	34	N	N	N	N															N
+143	63x64	full	10:54	11:25	0:31	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	WT	0	0	Y	Y	44			N	N	N	N	N	N	N
+144	63x64	full	12:45	13:19	0:34	Y	48	17	15:20	0	0	0	0					N	N	N	N	WT	0	0	Y	N	134			N	N	N	N	N	N	N
+145	63x64	full	11:48	12:20	0:32	Y	2	15	2:35	0	0							N	N	N	N															N
+146	63x64	full	10:38	11:00	0:22	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	Y	295			N	N	N	N	N	N	N
+147	63x64	full	10:46	11:21	0:35	Y	6	15	17:30	0	0							N	N	N	N	WT	0	0	Y	N	412			N	N	N	N	N	N	N
+148	63x64	full	10:40	11:17	0:37	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	WT	0	0	Y	Y	72			Y	N	N	Y	N	N	N
+149	63x64	full	10:54	11:30	0:36	Y	96	19		59	39	35	35	0	0	0	0	N	N	N	N	WT	0	0	N	N	134			N	N	N	N	N	N	N
+150	63x64	full	12:23	12:56	0:33	Y	2	15	15:00	0	0							N	N	N	N															N
+151	63x4040	dent	11:00	11:30	0:30	Y	96	19		39	28	0	0	50	43	29	20	N	N	N	N	dent	2	2	N	N	81	111	107	N	N	N	N	N	N	N
+152	63x4040	dent	10:46	11:07	0:21	Y	24	16	11:40	15	10							N	N	N	N	dent	2	2	Y	N	434	143	160	N	N	N	N	N	N	N
+153	63x4040	dent	10:50	11:17	0:27	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	Y	N	0	0	0	N	N	N	N	N	N	N
+154	63x4040	dent				N												N	N	N	N															N
+155	63x4040	dent	10:55	11:21	0:26	Y	6	15	17:30	0	0							N	N	N	N	dent	2	2	N	N	523	140	184	N	N	N	N	N	N	N
+156	63x4040	dent	10:47	11:17	0:30	Y	24	16	11:40	28	11							N	N	N	N	dent	2	2	N	Y	178	52	56	N	N	N	N	N	N	N
+157	63x4040	dent	12:24	12:54	0:30	Y	2	15	15:00	0	0							N	N	N	N															N
+158	63x4040	dent	10:47	11:17	0:30	Y	24	16	11:40	31	17							N	N	N	N	dent	2	2	N	Y	140	168	83	N	N	N	N	N	N	N
+159	63x4040	dent	11:06	11:31	0:25	Y	96	19	11:40	45	19	0	0	1	1	45	19	N	N	N	N	dent	2	2	N	N	312	99	20	N	N	N	N	N	N	N
+160	63x4040	dent	10:50	11:21	0:31	Y	24	16	17:40	41	22							N	N	N	N	dent	2	2	N	Y	373	201	141	N	N	N	N	N	N	N
+161	63x4040	dent	11:00	11:26	0:26	Y	6	15	17:30	4	2							N	N	N	N	dent	2	2	N	Y	478	136	146	N	N	N	N	N	N	N
+162	63x4040	dent	10:50	11:21	0:31	Y	6	15	17:30	12	3							N	N	N	N	dent	2	2	N	N	453	148	85	N	N	N	N	N	N	N
+163	63x4040	dent	10:55	11:21	0:26	Y	6	15	12:35	53								N	N	N	N	dent	2	2	N	N	411	114	159	N	N	N	N	N	N	N
+164	63x4040	dent	11:00	11:34	0:34	Y	72	18		32	9	0	0	63		17		N	N	N	N	dent	2	2	N	N	128	61	89	N	N	N	N	N	N	N
+165	63x4040	dent	11:31	11:59	0:28	Y				54	32							N	N	N	N															N
+166	63x4040	dent	11:00	11:31	0:31	Y	96	19		48	18	0	0	74	40	32	13	N	N	N	N	dent	2	2	N	N	101	93	90	N	N	N	N	N	N	N
+167	63x4040	dent	10:50	11:18	0:28	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	N	478	63	14	N	N	N	N	N	N	N
+168	63x4040	dent	13:12	13:39	0:27	Y	48	17	15:20	39	24	0	0					N	N	N	N	dent	2	2	N	Y	352	67	49	N	N	N	N	N	N	N
+169	63x4040	dent				N												N	N	N	N															N
+170	63x4040	dent	11:07	11:37	0:30	Y	96	19		27	12	38	12	0	0	51	19	N	N	N	N	dent	2	2	N	Y	90	72	101	N	N	N	N	N	N	N
+171	63x4040	dent	10:55	11:26	0:31	Y	24	16	11:40	37	29							N	N	N	N	dent	2	2	N	Y	17	2	2	N	N	N	N	N	N	N
+172	63x4040	dent	10:55	11:22	0:27	Y	6	15	17:30	2	1							N	N	N	N															N
+173	63x4040	dent	11:07	11:31	0:24	Y	96	19		33	12	0	0	53	17	42	23	N	N	N	N	dent	2	2	N	N	272	47	109	N	N	N	N	N	N	N
+174	63x4040	dent	10:47			Y	72	18	15:20	53	19	0	0	38	14			N	N	N	N	dent	2	2	N	Y	210	38	45	N	N	N	N	N	N	N
+175	63x4040	dent	11:01	11:27	0:26	Y	24	16	11:40	48	13							N	N	N	N	dent	2	2	N	Y	344	59	38	N	N	N	N	N	N	N
+176	63x4040	dent	14:14	14:50	0:36	Y	48	17	15:20	48	17	0	0					N	N	N	N	dent	2	2	N	Y	282	67	96	N	N	N	N	N	N	N
+177	63x4040	dent	11:22	11:51	0:29	Y	96	19		46	25	0	0	1	0	69	19	N	N	N	N	dent	2	2	N	Y	289	49	99	N	N	N	N	N	N	N
+178	63x4040	dent	13:03	13:03		Y	2	15	15:00	0	0							N	Y	N	Y															N
+179	63x4040	dent	11:01	11:28	0:27	Y	72	18	12:35	31	8	0	0	48	12			N	N	N	N	dent	2	2	N	N	319	45	34	N	N	N	N	N	N	N
+180	63x4040	dent	11:18	11:42	0:24	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	dent	2	2	N	N	0	0	0	N	N	N	N	N	Y	N
+181	63x4040	dent				N												N	N	N	N															N
+182	63x4040	dent	9:58	10:31	0:33	Y	72	18	12:35	33	22	0	0	47	32			N	N	N	N	dent	2	2	N	N	20	79	69	N	N	N	N	N	N	N
+183	63x4040	dent	13:48	14:29	0:41	Y	48	17	15:20	42	31	0	0					N	N	N	N															N
+184	63x4040	dent				N												N	N	N	N															N
+185	63x4040	dent	10:27	11:04	0:37	Y	24	16	11:40	45	19							N	N	N	N	dent	2	2	N	N	372	74	120	N	N	N	N	N	N	N
+186	63x4040	dent	11:04	11:30	0:26	Y												Y	N	N	Y	dent	2	2	N	N	243	130	114	N	N	N	N	N	N	N
+187	63x4040	dent	14:02	14:47	0:45	Y				30	22	0	0					N	N	N	N	dent	2	2	N	N	245	9	78	N	N	N	N	N	N	N
+188	63x4040	dent				N												N	N	N	N															N
+189	63x4040	dent	10:09	10:42	0:33	Y	72	18	12:35	52	43	0	0	47	32			N	N	N	N	dent	2	2	N	Y	47	19	88	N	N	N	N	N	N	N
+190	63x4040	dent	10:31	11:09	0:38	Y	72	18	12:35	66	52	0	0	24	21			N	N	N	N	dent	2	2	N	N		46	131	N	N	N	N	N	N	N
+191	63x4040	dent	10:58	11:37	0:39	Y												N	N	N	N															N
+192	63x4040	dent	10:01	10:30	0:29	Y	72	18	12:35	57	57	0	0	30	26			N	N	N	N	dent	2	2	N	N	383	115	74	N	N	N	N	N	N	N
+193	63x4040	dent	10:49	11:19	0:30	Y	24	16	11:40	25	21							N	N	N	N	dent	2	2	N	N	361	71	54	N	N	N	N	N	N	N
+194	63x4040	dent	9:57	10:28	0:31	Y	72	18	12:35	40	28	0	0	0	0			N	N	N	N	dent	2	2	N	Y	284	108	70	N	N	N	N	N	N	N
+195	63x4040	dent	11:47	12:12	0:25	Y	48	17	15:20	43	38	0	0					N	N	N	N	dent	2	2	N	N	433	136	142	N	N	N	N	N	N	N
+196	63x4040	dent	12:09	12:58	0:49	Y	2	15	15:00	0	0							N	N	N	N															N
+197	63x4040	dent	12:34	13:01	0:27	Y	2	15	15:00	0	0							N	N	N	N															N
+198	63x4040	dent	12:03	12:39	0:36	Y	2	15	2:35	0	0							N	N	N	N															N
+199	63x4040	dent		11:03		Y	96	19		87	57	0	0	104	69	43	24	N	N	N	N	dent	2	2	N	N	32	16	54	N	N	N	N	N	N	N
+200	63x4040	dent	10:31	11:37	1:06	Y	96	19		0		0	0	1	1	3	2	N	N	N	N	dent	2	2	N	N	519	58	106	N	N	N	N	N	N	N
+201	63x4040	full				N												N	N	N	N															N
+202	63x4040	full	12:34	13:05	0:31	Y	2	15	15:00	0	0							N	N	N	N															N
+203	63x4040	full	12:28	13:00	0:32	Y	2	15	15:00	0	0							N	N	N	N															N
+204	63x4040	full				N												N	N	N	N															N
+205	63x4040	full	11:09	11:46	0:37	Y	6	15	18:05	0	0							N	N	N	N	WT	0	0	Y	Y	373			N	N	N	Y	N	N	N
+206	63x4040	full				N				0	0							N	N	N	N															N
+207	63x4040	full	10:10	10:38	0:28	Y	72	18	12:35	0?		0	0	0	0			N	N	N	N	WT	0	0	Y	N	333			N	N	N	N	N	N	N
+208	63x4040	full	10:10	10:43	0:33	Y	24	16	11:40	38	8							N	N	N	N	WT	0	0	Y	Y	192			N	N	N	Y	N	N	N
+209	63x4040	full	10:06	10:38	0:32	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	WT	0	0	Y	N	217			Y	N	N	N	N	N	N
+210	63x4040	full	14:52	15:19	0:27	Y	48	17	15:20	29	29	0	0					N	N	N	N	WT	0	0	N	Y	29			N	N	N	N	N	N	N
+211	63x4040	full	11:26	12:07	0:41	Y	96	19		77	36	17	17	1	1	0	0	N	N	N	N	WT	0	0	N	N	31			N	N	N	N	N	N	N
+212	63x4040	full	11:36	12:16	0:40	Y				0	0	0	0	0	0			Y	N	N	Y															N
+213	63x4040	full	10:20	10:44	0:24	Y	24	16	11:40	51	44							N	N	N	N	WT	0	0	N	N	65			N	N	N	N	N	N	N
+214	63x4040	full	10:32	11:00	0:28	Y	24	16	11:40	59	49							N	N	N	N	WT	0	0	N	N	112			N	N	N	N	N	N	N
+215	63x4040	full	13:43	14:23	0:40	Y				0	0							Y	N	N	Y															N
+216	63x4040	full	10:25	10:52	0:27	Y	24	16	11:40	46	17							N	N	N	N	WT	0	0	N	N	216			N	N	N	N	N	N	N
+217	63x4040	full	11:00	11:36	0:36	Y	6	15	17:45	0	0							N	N	N	N	WT	0	0	N	N	128			N	N	N	N	N	N	N
+218	63x4040	full	12:01	12:41	0:40	Y	2	15	15:00	0	0							N	N	N	N															N
+219	63x4040	full	10:28	11:00	0:32	Y	24	16	11:40	57	54							N	N	N	N	WT	0	0	N	Y	32			N	N	N	N	N	N	N
+220	63x4040	full				N												N	N	N	N															N
+221	63x4040	full	10:55	11:36	0:41	Y	72	18	12:35	73	52	42	37	34	34			N	N	N	N	WT	0	0	N	N	143			N	N	N	N	N	N	N
+222	63x4040	full	11:41	12:09	0:28	Y	72	18	12:35	41	20	0	0	0	0			N	N	N	N	WT	0	0	N	N	42			N	N	N	N	N	N	N
+223	63x4040	full	10:52	11:36	0:44	Y	6	15	17:45	0	0							N	N	N	N	WT	0	0	Y	N	19			N	N	N	N	N	N	N
+224	63x4040	full	10:41	11:09	0:28	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	N	422			N	N	N	N	N	N	N
+225	63x4040	full				N												N	N	N	N															N
+226	63x4040	full	10:35	11:09	0:34	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	Y	69			N	N	N	Y	N	N	N
+227	63x4040	full	10:59	11:29	0:30	Y	72	18	12:35	36	32	0	0	0	0			N	N	N	N	WT	0	0	N	N	23			N	N	N	N	N	N	N
+228	63x4040	full	10:45	11:12	0:27	Y	24	16	11:40	33	19							N	N	N	N	WT	0	0	N	Y				N	N	N	N	N	N	N
+229	63x4040	full	13:20	12:49		Y	48	17	15:20	20	9	0	0					N	N	N	N	WT	0	0	N	Y	72			N	N	N	N	Y	N	N
+230	63x4040	full	10:51	11:26	0:35	Y	6	15	17:40	0	0							N	N	N	N	WT	0	0	N	Y	167			N	N	N	N	N	N	N
+231	63x4040	full	11:50	12:35	0:45	Y	2	15	2:35	0	0							N	N	N	N															N
+232	63x4040	full	11:50	12:19	0:29	Y				0	0	0	0					N	N	N	N	WT	0	0	Y	Y				N	N	N	N	N	N	N
+233	63x4040	full				N												N	N	N	N															N
+234	63x4040	full				N												N	N	N	N															N
+235	63x4040	full	11:41	12:09	0:28	Y	96	19		53	27	21	21	45	40	56	51	N	N	N	N	WT	0	0	N	N	68			N	N	N	N	N	N	N
+236	63x4040	full	11:46	12:28	0:42	Y	96	19		0	0	0	0	0	0	32	11	N	N	N	N	WT	0	0	N	N	151			N	N	N	N	N	N	N
+237	63x4040	full				N												Y	N	N	Y															N
+238	63x4040	full	13:43	14:16	0:33	Y	48	17	15:20	11	5	0	0					N	N	N	N	WT	0	0	N	Y	87			N	N	N	N	N	N	N
+239	63x4040	full	11:54	12:34	0:40	Y	2	15	2:35	0	0							N	N	N	N															N
+240	63x4040	full	14:32	14:56	0:24	Y	96	19		42	34	0	0	0	0	0	0	N	N	N	N	WT	0	0	N	N	352			N	N	N	N	N	N	N
+241	63x4040	full	11:46	12:03	0:17	Y				0	0	0	0	0	0			Y	N	N	Y															N
+242	63x4040	full	12:52	13:43	0:51	Y	48	17	15:20	50	23	33	23					N	N	N	N	WT	0	0	N	Y	88			N	N	N	N	N	N	N
+243	63x4040	full				N												N	N	N	N															N
+244	63x4040	full	10:53	11:25	0:32	Y	6	15	17:40	0	0							N	N	N	N	WT	0	0	Y	N	397			N	N	N	N	N	N	N
+245	63x4040	full	10:57	11:46	0:49	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	N	0			N	N	N	N	N	N	N
+246	63x4040	full				N												N	N	N	N															N
+247	63x4040	full				N												N	N	N	N															N
+248	63x4040	full				N												N	N	N	N															N
+249	63x4040	full	12:06	12:13	0:07	Y												Y	N	N	Y															N
+250	63x4040	full	11:18	11:57	0:39	Y	96	19		56	38	25	25	80	80	81	81	N	N	N	N	WT	0	0	N	Y	65			N	N	N	N	N	N	N
+251	63	dent	10:57	11:29	0:32	Y	6	15	17:40	0	0							N	N	N	N	dent	2	2	N	N	482	93	131	N	N	N	N	N	N	N
+252	63	dent	11:15	11:46	0:31	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	500	119	113	N	N	N	N	N	N	N
+253	63	dent	11:12	11:53	0:41	Y	96	19		33	18	0	0	0	0	2	2	Y	N	N	Y	dent	2	2	N	N	27	75	74	N	N	N	N	N	N	N
+254	63	dent	11:36	12:19	0:43	Y				29	20	0	0	0	0			N	N	N	N															N
+255	63	dent	10:51	11:25	0:34	Y	6	15	17:40									N	N	N	N	dent	2	2	N	Y	394	73	112	N	N	N	N	N	N	N
+256	63	dent	10:57	11:25	0:28	Y	6	15	17:40									N	N	N	N	dent	2	2	N	N	493	150	121	N	N	N	N	N	N	N
+257	63	dent	11:12	11:41	0:29	Y	24	16	11:40	8	7							N	N	N	N	dent	2	2	N	Y	492	139	101	N	N	N	N	N	N	N
+258	63	dent	11:18	11:45	0:27	Y	24	16	11:40	23	20							N	N	N	N	dent	2	2	N	N	399	86	124	N	N	N	N	N	N	N
+259	63	dent	10:55	11:32	0:37	Y	24	16	11:40	46	24							N	N	N	N	dent	2	2	N	Y	399	86	124	N	N	N	N	N	N	N
+260	63	dent	11:05	11:32	0:27	Y	24	16	11:40	37	28							N	N	N	N	dent	2	2	N	Y	442	107		N	N	N	N	N	N	N
+261	63	dent	14:23	14:56	0:33	Y	48	17	15:20	0	0	0	0					N	N	N	N	dent	2	2	N	Y	564	41	22	N	N	N	N	Y	N	N
+262	63	dent	14:31	14:56	0:25	Y	48	17	15:20	0	0	0	0					N	N	N	N	dent	2	2	N	Y	361	20	5	N	N	N	N	Y	N	N
+263	63	dent	11:05	11:35	0:30	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	395	105	92	N	N	N	N	N	N	N
+264	63	dent	11:53	12:30	0:37	Y	2	15	2:35	0	0							N	Y	N	Y															N
+265	63	dent	11:25	11:49	0:24	Y	72	18	12:35	7	6	0	0	12	7			N	N	N	N	dent	2	2	N	Y	78	100	98	N	N	N	N	N	N	N
+266	63	dent	11:12	11:57	0:45	Y	72	18	12:35	15	9	0	0	0	0			N	N	N	N	dent	2	2	N	Y	67	75	136	N	N	N	N	N	N	N
+267	63	dent	10:59	11:28	0:29	Y	6	15	17:40	0	0							N	N	N	N	dent	2	2	N	Y	494	101	170	N	N	N	N	N	N	N
+268	63	dent	11:11	11:53	0:42	Y	72	18	12:35	0	0	0	0	0	0			N	N	N	N	dent	2	2	N	Y	154	21		N	N	N	N	N	N	N
+269	63	dent	11:35	12:13	0:38	Y	96	19		0	0	0	0	0	0	34	28	N	N	N	N	dent	2	2	N	Y	249	43	52	N	N	N	N	N	N	N
+270	63	dent	11:18	11:56	0:38	Y	72	18	12:35	26	20	0	0	0	0			N	N	N	N	WT	2	2	N	N				N	Y	Y	N	N	N	N
+271	63	dent	12:58			Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	dent	2	2	N	Y				N	N	Y	N	N	N	N
+272	63	dent	12:33	13:14	0:41	Y	2	15	15:19	0	0							N	N	N	N															N
+273	63	dent	11:24	11:56	0:32	Y	72	18	12:35	15	10	0	0	4	3			N	N	N	N	dent	2	2	Y	N	365	45	43	N	N	N	N	N	N	N
+274	63	dent	11:05	11:35	0:30	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	509	180	87	N	N	N	N	N	N	N
+275	63	dent	14:06	14:47	0:41	Y	48	17	15:20	8	5	0	0					N	N	N	N	dent	2	2	N	Y	492			N	N	N	N	N	N	N
+276	63	dent				N												N	N	N	N															N
+277	63	dent	11:24	11:53	0:29	Y	72	18	12:35	0	0	0	0	1	1			N	N	N	N	WT	2	2	N	N	55	67	66	Y	Y	N	N	N	N	N
+278	63	dent	10:57	11:28	0:31	Y	6	15	17:40	0	0							N	N	N	N	dent	2	2	N	N	537	4	2	N	N	N	N	N	N	N
+279	63	dent				N												N	N	N	N															N
+280	63	dent	11:40	12:22	0:42	Y	96	19		0	0	0	0	1	1	10	6	N	N	N	N	dent	2	2	N	Y	467	43	54	N	N	N	N	N	N	N
+281	63	dent	11:17	11:40	0:23	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	514	32	66	N	N	N	N	N	N	N
+282	63	dent	14:16	14:59	0:43	Y	48	17	15:30	0	0	1	1					N	Y	N	Y	dent	1	1	N	Y	475	97		Y						N
+283	63	dent	11:07	11:45	0:38	Y	72	18	12:35	0	0	0	0	1	1			N	N	N	N	WT	2	2	N	Y	27	99	102	N	Y	N	N	N	N	N
+284	63	dent	12:46	13:19	0:33	Y	2	15	15:19	0	0							N	N	N	N															N
+285	63	dent	11:07	11:35	0:28	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	479	69	49	N	N	N	N	N	N	N
+286	63	dent	11:24	12:16	0:52	Y	96	19		0	0	0	0	1	1	0	0	N	N	N	N	dent	2	2	N	N	286	33	115	N	N	N	N	N	N	N
+287	63	dent	11:14	11:40	0:26	Y	72	18	12:35	0	0	0	0	1	1			N	N	N	N	dent	2	2	N	Y	398	41	86	Y	N	N	N	N	N	N
+288	63	dent	12:13	13:04	0:51	Y	2	15	15:12	0	0							N	N	N	N															N
+289	63	dent	11:14	11:45	0:31	Y	96	19		3	1	0	0	0	0	0	0	N	N	N	N	dent	2	2	N	N	485	94	116	N	N	N	N	N	N	N
+290	63	dent	11:20	12:00	0:40	Y				0	0	0	0					Y	N	N	Y															N
+291	63	dent				N												N	N	N	N															N
+292	63	dent	14:51	15:32	0:41	Y	48	17	15:20	0	0	1	1					N	Y	N	Y	dent	2	2	N	N	273	38	81	N	N	N	N	N	N	N
+293	63	dent	11:34	12:08	0:34	Y				0	0	0	0					N	N	N	N															N
+294	63	dent				N												N	N	N	N															N
+295	63	dent	12:00	12:27	0:27	Y	96	19		0	0	1	0	0	0	6	1	N	Y	N	Y	dent	2	2	N	Y	203	15	81	N	N	N	N	N	N	N
+296	63	dent	11:07	11:39	0:32	Y	24	16	11:40	0	0							N	N	N	N	dent	2	2	N	Y	478	8	115	N	N	N	N	N	N	N
+297	63	dent	12:16	12:51	0:35	Y	2	15	14:50	0	0							N	Y	N	Y															N
+298	63	dent				N												N	N	N	N															N
+299	63	dent				N												N	N	N	N															N
+300	63	dent	11:11	11:52	0:41	Y	72	18	12:35	1	1	0	0	0	0			N	N	N	N	dent	2	2	N	N	56	31	47	Y	N	N	N	N	N	N
+301	63	full	11:07	11:39	0:32	Y				20	20	16	16					N	N	N	N															N
+302	63	full	13:08			N	48	17	15:30	11	8	10	8					N	N	Y	Y	WT	0	0	N	Y	12			N	N	N	N	N	N	N
+303	63	full	11:48	12:27	0:39	Y	48	17	15:30	14		12						N	N	N	N	WT	0	0	N	Y	21			Y	N	N	N	N	N	N
+304	63	full	11:45	12:08	0:23	Y	72	18	12:35	20	12	16	16	16	16			N	N	Y	Y	WT	0	0	N	N	0			N	N	N	N	N	N	N
+305	63	full	12:05	12:33	0:28	Y	2	15	2:35	0	0							N	N	N	N															N
+306	63	full	11:28	11:44	0:16	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	N	Y	379			N	N	N	N	N	N	N
+307	63	full	11:44	12:12	0:28	Y	96	19		0	0	0	0	0	0	0	0	N	N	N	N	WT	0	0	Y	N	247			N	N	N	N	N	N	N
+308	63	full				N												N	N	N	N															N
+309	63	full	11:39	11:52	0:13	Y	72	18	12:35	27	16	0	0	8	8			N	N	N	N	WT	0	0	N	N	4			N	N	N	N	N	N	N
+310	63	full	11:48	12:15	0:27	Y	96	19		11	8	12	12	14	14	13	6	N	N	Y	Y	WT	0	0	N	N	42			N	N	N	N	N	N	N
+311	63	full	11:58	12:24	0:26	Y	96	19		16	9	18	18	11	11	8	3	N	N	Y	Y	WT	0	0	N	N	83			N	N	N	N	N	N	N
+312	63	full				N												N	N	N	N															N
+313	63	full	12:12	12:35	0:23	Y	2	15	2:35	0	0							N	N	N	N															N
+314	63	full	11:10	11:39	0:29	Y	24	16	11:40	15	8							N	N	N	N	WT	0	0	N	Y	48			N	N	N	N	N	N	N
+315	63	full	11:52	12:27	0:35	Y	48	17	15:20	0	0	0	0					N	N	N	N	WT	0	0	Y	N	347			N	N	N	N	N	N	N
+316	63	full				N												N	N	N	N															N
+317	63	full	11:10	11:44	0:34	Y	24	16	11:40	7	4							N	N	N	N	WT	0	0	N	N	60			N	N	N	N	N	N	N
+318	63	full	11:52	12:18	0:26	Y	96	19		0	0	0	0	8	8	0	0	N	N	N	N	dent	2	0	N	N	271	10	31	Y	Y	N	N	N	N	Y
+319	63	full	11:52	12:15	0:23	Y				0	0	0	0					Y	N	N	Y															N
+320	63	full				N												N	N	N	N															N
+321	63	full	11:47	12:15	0:28	Y				3	1							Y	N	N	Y															N
+322	63	full	11:14	11:44	0:30	Y	24	16	11:40	6	0							N	N	N	N	WT	0	0	N	Y	112			N	N	N	N	N	N	N
+323	63	full	11:38	12:02	0:24	Y												N	N	N	N															N
+324	63	full				N												N	N	N	N															N
+325	63	full	13:08	13:38	0:30	Y	48	17	15:20	33	23	0	0					N	N	N	N	WT	0	0	Y	Y	184			N	N	N	N	Y	N	N
+326	63	full	13:00	13:31	0:31	Y	48	17	15:20	26	6	26	24					N	N	Y	Y	WT	0	0	Y	Y	35			N	N	N	Y	N	N	N
+327	63	full				N												N	N	N	N															N
+328	63	full				N												N	N	N	N															N
+329	63	full	11:23	11:51	0:28	Y	24	16	11:40	0	0							N	N	N	N	WT	0	0	Y	N	179			N	N	N	N	N	N	N
+330	63	full	11:58	12:40	0:42	Y	2	15	2:35	0	0							N	N	N	N															N
+331	63	full	12:37	13:18	0:41	Y	2	15	15:19	0	0							N	N	N	N															N
+332	63	full	10:53	11:30	0:37	Y				9	5	0	0					Y	N	N	Y															N
+333	63	full	10:53	11:30	0:37	Y	6	15	17:40	0	0							N	N	N	N	WT	0	0	Y	N	86			N	N	N	N	N	N	N
+334	63	full	11:23	11:51	0:28	Y	24	16	11:40	4	4							N	N	N	N	WT	0	0	N	Y	215			N	N	N	N	N	N	N
+335	63	full	11:13	11:38	0:25	Y	6	15	17:45	0	0							N	N	N	N	WT	0	0	Y	N	91			N	N	N	N	N	N	N
+336	63	full	11:48	12:13	0:25	Y	72	18	12:35	0	0	0	0	0	0			N	Y	N	Y	dent	0	0	Y	N	50			N	Y	N	N	N	N	N
+337	63	full	12:01	12:14	0:13	Y												Y	N	N	Y															N
+338	63	full	11:43	12:04	0:21	Y				0	0							Y	Y	N	Y															N
+339	63	full	11:10	11:43	0:33	Y	24	16	11:40	12	0							N	N	N	N	WT	0	0	N	N	183			N	N	N	N	N	N	N
+340	63	full				N												N	N	N	N															N
+341	63	full				N												N	N	N	N															N
+342	63	full	11:27	11:38	0:11	Y	6	15	17:45	7	7							N	N	N	N	WT	0	0	N	N	1			N	N	N	N	N	N	N
+343	63	full	11:54	12:17	0:23	Y				0	0							Y	N	N	Y															N
+344	63	full				N												N	N	N	N															N
+345	63	full	11:23	11:47	0:24	Y	24	16	11:40	28	22							N	N	N	N	WT	0	0	N	N	9			N	N	N	N	N	N	N
+346	63	full				N												N	N	N	N															N
+347	63	full	10:47	11:10	0:23	Y	72	18	12:35	38	28	0	0	38	34			N	N	N	N	WT	0	0	N	N	9									N
+348	63	full	10:53	11:27	0:34	Y	6	15	17:40	0	0							N	N	N	N	WT	0	0	Y	N	222			N	N	N	N	N	N	N
+349	63	full	10:53	11:27	0:34	Y	6	15	17:40	0	0							N	N	N	N	WT	0	0	Y	N	269			N	N	N	N	N	N	N
+350	63	full	12:59	13:25	0:26	Y	2	15	15:19	0	0							N	N	N	N															
+																																				
+																																				
