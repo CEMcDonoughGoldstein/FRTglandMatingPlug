@@ -1,0 +1,917 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(gplots)
+library(RColorBrewer)
+library(psych)
+library(tibble)
+library(eulerr)
+library(pheatmap)
+
+library(ggbiplot)
+
+library(geneplotter)
+library(ggplot2)
+library(UpSetR)
+library(ggrepel)
+
+library(limma)
+library(MSnbase)
+
+'%notin%' <- Negate('%in%')
+po.col <- rgb(197,163,199, maxColorValue = 255)
+st.col <- rgb(88,37,131, maxColorValue = 255)
+fb.col <- rgb(255,239,245, maxColorValue = 255)
+bur.col <- rgb(0,130,99, maxColorValue = 255)
+sr.col <- rgb(64,142,222, maxColorValue = 255)
+ovd.col <- rgb(106,203,186, maxColorValue = 255)
+
+```
+
+Read in associated data
+
+```{r}
+plug.convert <- read.table("Plug.Convert.txt", header=F)
+colnames(plug.convert) <- c("FBgn.original", "FBgn", "GeneName")
+
+sperm <- read.table("DmelSpermFBGN.txt")
+
+#High confidence SFPs from Wigby and Brown et al. 2020
+#292 proteins with evidence for being transferred to the female or secreted
+SFP <- read.table("HighConfidenceSFP.WigbyBrown2020.txt", header=T, sep=",")
+
+#candidate SFPs from Wigby and Brown et al. 2020
+candidateSFP <- read.table("CandidateSFP.WigbyBrown.2020.txt", header=T, sep=",")
+candidateSFP <- unique(candidateSFP)
+
+avila <- read.table("Avila_FBgn.txt", header=F)
+length(which(avila$V1 %in% SFP$SFP)) #59 of the Avila proteins are considered SFPs the others are mostly sperm proteins
+
+protease <- read.table("Endopeptidase.GO0004175.txt", header=F)
+
+#FRT proteomics and transcriptomics
+FRT.summary <- read.table("FRT.summary.txt", header=T)
+
+FRT.proteomics <- read.table("frtfluid.spider.top.norm.txt", header=T)
+
+
+sex bias data
+RE.sexbias <- read.delim("mel.both.RE.sex.YO.txt", header=T, sep=",") 
+
+WF.sexbias <- read.delim("mel.both.WF.sex.YO.txt", header=T, sep=",") 
+
+maleRE.WF <- read.delim("mel.both.maleREWF.sex.YO.txt", header=T, sep=",")
+
+
+```
+
+
+Code for analyzing the sex bias
+requires: 
+- mel: a data frame of count data from Yang et al. Oliver lab 2018 tissue and whole fly data
+- mel.coldata: a dataframe with a description of each sample
+- code uses DEseq and is adapted from https://github.com/haiwangyang/transana/tree/master/transana
+```{r}
+#sex.tissue.de <- function(data, col.data ){
+#part_dds = DESeqDataSetFromMatrix(data, col.data, design=~sex)
+#part_dds = estimateSizeFactors(part_dds)
+#part_dds = DESeq(part_dds)
+#resultsNames(part_dds)
+#part_res = results(part_dds)
+#summary(part_res,alpha=0.05)
+#part_res = results(part_dds)
+#results <- data.frame(part_res)  
+
+#part_dds = estimateSizeFactors(part_dds)
+#part_normCounts = counts(part_dds, normalized=TRUE) 
+
+#x = log2(part_normCounts+1)
+#x = merge(x, part_res, by="row.names")
+#row.names(x) = x$Row.names 
+#x = x[,-1]
+#return(x)
+#}
+
+#mel.both.de <- rownames.first(mel)
+#mel.both.de <- mel.both.de[,grepl("WB", names(mel.both.de))]
+#mel.both.de <- subset(mel.both.de, rowSums(mel.both.de[,c(1:16)])>20)
+
+#mel.both.de.col <- mel.coldata[grepl("WB", mel.both.coldata$samples),]
+
+#mel.both.WF.sex <- sex.tissue.de(mel.both.de, mel.both.de.col)
+
+
+#mel.both.WF.sex$f.wf <- rowMeans(mel.both.WF.sex[,grepl("_f_", names(mel.both.WF.sex))])
+#mel.both.WF.sex$m.wf <- rowMeans(mel.both.WF.sex[,grepl("_m_", names(mel.both.WF.sex))])
+#mel.both.WF.sex <- mel.both.WF.sex[,c(17,18,22:24)]
+#colnames(mel.both.WF.sex) <- paste("mel.both", colnames(mel.both.WF.sex), sep = "_")
+#mel.both.WF.sex$mel.both_baseMean <- log(mel.both.WF.sex$mel.both_baseMean +1, 2)
+#mel.both.WF.sex$log2FoldChange.FM <- mel.both.WF.sex$mel.both_log2FoldChange * -1
+
+#write.table(mel.both.WF.sex, "mel.both.WF.sex.YO.txt", col.names = T, row.names = T, sep=",")
+
+#mel.both.de <- rownames.first(mel)
+#mel.both.de <- mel.both.de[,grepl("RE", names(mel.both.de))]
+#mel.both.de <- subset(mel.both.de, rowSums(mel.both.de[,c(1:16)])>20)
+
+#mel.both.de.col <- mel.coldata[grepl("RE", mel.both.coldata$samples),]
+
+#mel.both.RE.sex <- sex.tissue.de(mel.both.de, mel.both.de.col)
+
+
+#mel.both.RE.sex$f.RE <- rowMeans(mel.both.RE.sex[,grepl("_f_", names(mel.both.RE.sex))])
+#mel.both.RE.sex$m.RE <- rowMeans(mel.both.RE.sex[,grepl("_m_", names(mel.both.RE.sex))])
+#mel.both.RE.sex <- mel.both.RE.sex[,c(17,18,22:24)]
+#colnames(mel.both.RE.sex) <- paste("mel.both", colnames(mel.both.RE.sex), sep = "_")
+#mel.both.RE.sex$mel.both_baseMean <- log(mel.both.RE.sex$mel.both_baseMean +1, 2)
+#mel.both.RE.sex$log2FoldChange.FM <- mel.both.RE.sex$mel.both_log2FoldChange * -1
+
+#write.table(mel.both.RE.sex, "mel.both.RE.sex.YO.txt", col.names = T, row.names = T, sep=",")
+
+#mel.both.sex.compare <- merge(mel.both.WF.sex, mel.both.RE.sex, by= "row.names")
+
+#ggplot(data=mel.both.sex.compare, aes(x= log2FoldChange.FM.x, y=log2FoldChange.FM.y))+
+#  geom_point(pch=21, cex=2, alpha=0.8)+
+#  theme_classic()
+```
+
+
+Read current plug data in & QC + normalize
+```{r}
+plug <- read.table ("P737_200720_Proteins.txt", header=T) #2458
+plug <- subset(plug, plug$Protein.FDR.Confidence..Combined == "High") #2108
+plug <- subset(plug, plug$X.Unique.Peptides >= 2) #1532
+plug <- subset(plug, grepl("FBgn", plug$Accession)) #1514
+plug <- plug[,c(5,21:26)]
+plug <- subset(plug,rowSums(plug[,c(2:7)] >= 0) == 6) #1508
+
+colnames(plug) <- c("FBgn", "Control.1", "Control.2", "Control.3", "NoGlands.1", "NoGlands.2", "NoGlands.3")
+
+write.table(plug$FBgn, "plug.proteins", row.names = F, col.names = F, quote = F)
+```
+
+
+Normalize data and look at relationships among samples with PCA, MDS, and heirachical clustering
+```{r}
+# read data into MSnSet
+f <- plug
+e <- c(2:7)
+row.names(f) <- f$FBgn
+x <- readMSnSet2(f, e, sep = "\t")
+
+#change sample names and make matrix of name and replicate information
+Sample<-gsub("Abundance\\.F1\\.\\d*[C|N]?\\.Sample\\.(\\d)\\.(\\w*)", "\\2.\\1", colnames(exprs(x)))
+tmp <- data.frame(do.call(rbind, strsplit(Sample, "[.]")))
+names(tmp) <- c("Sample","Replicate")
+
+sampleNames(x)<-paste(tmp$Sample, tmp$Replicate, sep = "")
+rownames(tmp) <- paste(tmp$Sample, tmp$Replicate, sep = "")
+pData(x) <- tmp
+
+#log transform and normalize data
+x <- log(x, 2)
+x <- normalise(x,"diff.median")
+
+plug <- as.data.frame(t(x))
+
+#look at spread of data post normalization
+boxplot(exprs(x))
+
+# look at relationships among samples with PCA
+pca <- prcomp(t(exprs(x)))
+std_dev <- pca$sdev
+pr_var <- std_dev^2
+prop_varex <- data.frame(pr_var/sum(pr_var))
+plot(pca, type="l")
+
+ggbiplot(pca, obs.scale=1, var.axes = F, choice=1:2)+
+  geom_point(shape=21, cex=5,bg=c(rep("#79E97C", 3), rep("#4851D3", 3)))+
+  theme_classic ()
+#ggsave("plug.pca.pdf", width = 6, height = 5, units = "in")
+
+#look at relationships among samples with MDS
+plotMDS(exprs(x), dim=c(1,2), bg=c(rep("#79E97C", 3), rep("#4851D3", 3)), pch=21, cex=2)
+
+#look at relationships among samples with heirarchical clustering
+data = as.matrix(exprs(x))
+sample_cor = cor(data, method='pearson', use='pairwise.complete.obs')
+sample_dist = as.dist(1-sample_cor)
+hc_samples = hclust(sample_dist, method='complete')
+
+my_sample_col <- data.frame(Name = c("Control.1", "Control.2", "Control.3", "NoGlands.1", "NoGlands.2", "NoGlands.3"))
+row.names(my_sample_col) <- colnames(x)
+
+#tiff('plug.corr.tiff', units="in", width=6, height=6, res=300)
+heatmap.2(sample_cor, 
+          dendrogram='both', 
+          Rowv=as.dendrogram(hc_samples), 
+          Colv=as.dendrogram(hc_samples), 
+          scale='none', 
+          symm=TRUE, 
+          density.info='none', 
+          col = brewer.pal(9,"Greys"), 
+          trace='none', 
+          ColSideColors = c(rep("#79E97C", 3), rep("#4851D3", 3)),
+          RowSideColors = c(rep("#79E97C", 3), rep("#4851D3", 3)),
+          labRow = c( "Control.1", "Control.2", "Control.3", "NoGlands.1", "NoGlands.2", "NoGlands.3"),
+          labCol = c("Control.1", "Control.2", "Control.3", "NoGlands.1", "NoGlands.2", "NoGlands.3"),
+          cexCol=0.9, cexRow=0.9, 
+          key=T, key.xlab = "Correlation Coeficient", 
+          key.ylab = "", key.title="Correlation Coeficient")  
+#dev.off()
+```
+
+Look at representation of sperm, SFPs, and FRT expressed genes among identified proteins 
+```{r}
+#Proteins identified in Avila mating plug proteome
+length(which(avila$V1 %in% plug.convert$FBgn)) #51
+51/65 #78.46%
+
+#High confidence SFPs Wigby and Brown et al. 2020 list
+length(which(SFP$SFP %in% plug.convert$FBgn))#172
+172/292 #58.9% of this SFP list
+
+#These make up the majority of the Avila SFPs
+length(which(SFP$SFP %in% plug.convert$FBgn & SFP$SFP %in% avila$V1))#47
+#so 47/51 or the vast majority of the Avila proteins identified are SFPs rather than more likely sperm proteins
+
+#proportion of the proteome that are  high confidence SFPs
+length(which(SFP$SFP %in% plug.convert$FBgn))/ length(plug.convert$FBgn) #11.4%
+#relatively small proportion of the total plug proteome
+#not going to use this number but instead once I finalize what I want to consider SFPs (see below)
+
+#how many candidate SFPs are here
+length(which(candidateSFP$candidateSFP %in% plug.convert$FBgn))#108
+length(which(candidateSFP$candidateSFP %in% plug.convert$FBgn)) / length(candidateSFP$candidateSFP) #35.0%
+
+#Proteins identified in cumulative sperm proteome (DMspI and II)
+length(which(plug.convert$FBgn %in% sperm$V1)) #698
+length(which(plug.convert$FBgn %in% sperm$V1)) / length(sperm$V1)#39.4% of all sperm proteins
+
+#Overlap of proteins in sperm & SFP proteome
+length(which(plug.convert$FBgn %in% sperm$V1 & plug.convert$FBgn %in% SFP$SFP)) #44
+
+#Proteins identified in FRT tissue or fluid proteome 
+length(which(plug.convert$FBgn %in% FRT.proteomics$primary_FBgn))
+883/1508 #58.6% of total plug proteins identified
+length(which(plug.convert$FBgn %in% FRT.proteomics$primary_FBgn)) / length(FRT.proteomics$primary_FBgn) #48.0% of the tissue/fluid proteome
+
+#Proteins identified in the FRT tissues transcriptome
+length(which(plug.convert$FBgn %in% FRT.summary$FBgn))#1099
+1099/1508 #72.9% of total plug proteins identified
+length(which(plug.convert$FBgn %in% FRT.summary$FBgn))/ length(FRT.summary$FBgn)
+
+length(which(plug.convert$FBgn %in% FRT.summary$FBgn | plug.convert$FBgn %in% FRT.proteomics$primary_FBgn)) #1120
+1120/1508 #74.3% of total plug proteins identified
+```
+
+Make DF that labels proteins as SFP, sperm, FRT, make averages for all samples, wild type and no glands
+```{r}
+plug <- full_join(plug.convert, plug, by=c("FBgn.original" = "FBgn"))
+
+#Calculate average abudance for (1) all samples (2) wild type (3) no glands and the difference in abundance between wild type and no glands
+plug$allMean <- rowMeans(plug[,c(4:9)])
+plug$controlMean <- rowMeans(plug[,c(4:6)])
+plug$noglandMean <- rowMeans(plug[,c(7:9)])
+plug$diff <- plug$controlMean - plug$noglandMean
+
+
+#Annotate with whether proteins were identified in Avila plug data, SFP (Wigby and Brown 2020), FRT proteome or transcriptome, or sperm data (DmSPI & II)
+plug$Avila.plug <- ifelse(plug$FBgn %in% avila$V1, "Y", "N")
+
+plug$SFP.Wigby2020 <- ifelse(plug$FBgn %in% SFP$SFP, "Y", "N")
+plug$candidateSFP.Wigby2020 <- ifelse(plug$FBgn %in% candidateSFP$candidateSFP, "Y", "N")
+
+plug$sperm.all <- ifelse(plug$FBgn %in% sperm$V1, "Y", "N")
+
+plug$FRTproteome <- ifelse (plug$FBgn %in% FRT.proteomics$primary_FBgn, "Y", "N")
+plug$FRTtranscriptome <- ifelse (plug$FBgn %in% FRT.summary$FBgn, "Y", "N")
+
+plug$female <- ifelse(plug$FRTproteome == "Y" | plug$FRTtranscriptome == "Y", "Y", "N")
+```
+
+Look for any other potential SFPs
+
+```{r}
+#missing 30 proteins from RE data (even though I used no cutoffs...)
+length(which(plug$FBgn %in% row.names(RE.sexbias)))#1457
+RE.plug.not <- subset(plug, plug$FBgn %notin% row.names(RE.sexbias)) #51 not in the data
+RE.sexbias$fbgn <- row.names(RE.sexbias)
+RE.sexbias <- RE.sexbias[,c(7,3,6)]
+colnames(RE.sexbias) <- c("FBgn", "RE.sexbias.pvalue", "RE.sexbias.log2FC")
+
+#missing 28 proteins from the WF data...
+length(which(plug$FBgn %in% row.names(WF.sexbias)))#1474
+WF.plug.not <- subset(plug, plug$FBgn %notin% row.names(WF.sexbias)) #34 not in the data
+WF.sexbias$fbgn <- row.names(WF.sexbias)
+WF.sexbias <- WF.sexbias[,c(7,3,6)]
+colnames(WF.sexbias) <- c("FBgn", "WF.sexbias.pvalue", "WF.sexbias.log2FC")
+
+length(which(plug$FBgn %in% row.names(maleRE.WF))) #1463
+maleRE.WF$fbgn <- row.names(maleRE.WF.sexbias)
+maleRE.WF <- maleRE.WF[,c(7,3,6)]
+colnames(maleRE.WF) <- c("FBgn", "maleRE.WF.pvalue", "maleRE.WF.log2FC")
+
+plug <- left_join(plug, RE.sexbias, by=c("FBgn"))
+plug <- left_join(plug, WF.sexbias, by=c("FBgn"))
+plug <- left_join(plug, maleRE.WF, by=c("FBgn"))
+
+#find those that are sign and 2 fold male RE and not already a known or candidate SFP
+
+malebias.plug <- subset(plug, plug$RE.sexbias.pvalue < 0.05 & plug$RE.sexbias.log2FC <= -2)
+malebias.plug <- subset(malebias.plug, malebias.plug$maleRE.WF.pvalue < 0.05 & malebias.plug$maleRE.WF.log2FC >= 2)
+malebias.plug <- subset(malebias.plug, malebias.plug$SFP.Wigby2020 == "N" & malebias.plug$candidateSFP.Wigby2020 == "N")
+#37 proteins... some of these do have sperm or FRT annotations but indications are strong that they could be SFPs...
+
+#combine these putative novel SFPs with the known/candidate into a final SFP list!
+plug$putativeSFP <- ifelse(plug$FBgn %in% malebias.plug$FBgn, "Y", "N")
+plug$SFP <- ifelse(plug$SFP.Wigby2020 == "Y" | plug$candidateSFP.Wigby2020 == "Y" | plug$putativeSFP == "Y", "Y", "N")
+
+length(subset(plug$FBgn.original, plug$SFP == "Y")) #317 SFPs in total here
+
+length(which(plug$SFP.Wigby2020 == "Y")) + length(which(plug$candidateSFP.Wigby2020 == "Y")) + length(which(plug$putativeSFP == "Y")) #37
+#172 + 108 + 37
+#317 now the same!
+
+
+#calculate proportion of identified proteins that are SFPs
+length(which(plug$SFP == "Y"))/ length(plug$FBgn) #21.0%
+
+#finalize sperm list to not include those sperm proteins that are also SFPs (use for everything except venn diagram)
+length(which(plug$sperm.all == "Y" & plug$SFP == "Y")) 116
+length(which(plug$sperm.all == "Y" & plug$SFP == "Y")) / length(which(plug$sperm.all == "Y")) #16.6%
+
+plug$sperm <- ifelse(plug$sperm.all == "Y" & plug$SFP == "N", "Y", "N")
+length(which(plug$sperm == "Y"))
+
+SFP.plug <- subset(plug[,c("FBgn", "GeneName", "SFP.Wigby2020", "candidateSFP.Wigby2020", "putativeSFP" )], plug$SFP == "Y")
+SFP.plug <- full_join(SFP.plug, SFP, by=c("FBgn"= "SFP"))
+SFP.plug$SFP.Wigby2020 <- ifelse(is.na(SFP.plug$GeneName) & is.na(SFP.plug$SFP.Wigby2020), "Y", SFP.plug$SFP.Wigby2020)
+SFP.plug$candidateSFP.Wigby2020 <- ifelse(is.na(SFP.plug$GeneName) & is.na(SFP.plug$candidateSFP.Wigby2020), "N", SFP.plug$candidateSFP.Wigby2020)
+SFP.plug$putativeSFP<- ifelse(is.na(SFP.plug$putativeSFP) & is.na(SFP.plug$putativeSFP), "N", SFP.plug$putativeSFP)
+SFP.plug <- SFP.plug[,-2]
+
+write.table(SFP.plug, "plug.sfp.all.txt", col.names = T, row.names = F)
+
+plug.sfp <- subset(plug, plug$SFP == "Y")
+plug.sfp$plug2 <- "Y"
+plug.sfp <- plug.sfp[,c(2,3,30)]
+write.table(plug.sfp, "plug.sfp.txt", col.names = T, row.names = F)
+
+SFP.PEMS <- read.table("McCullough_PEMS_Canddiatesfp.csv", sep=",", header=T)
+length(which(SFP.PEMS$validated_id %in% candidateSFP$candidateSFP)) #3
+SFP.PEMS$SFP.Wigby2020 <- ifelse(SFP.PEMS$validated_id %in% SFP$SFP, "Y", "N")
+SFP.PEMS$candidateSFP.Wigby2020 <- ifelse(SFP.PEMS$validated_id %in% candidateSFP$candidateSFP, "Y", "N")
+SFP.PEMS$plug <- ifelse(SFP.PEMS$validated_id %in% plug.DE$FBgn, "Y", "N")
+
+
+SFP.PEMS <- SFP.PEMS[,c(1,3)]
+
+SFP.plug.PEMS <- full_join(SFP.plug, SFP.PEMS, by=c("FBgn" = "validated_id"))
+```
+
+
+Look at the proteins that are still uncategorized
+```{r}
+plug.originunknown <- subset(plug, plug$SFP == "N" & plug$sperm == "N"& plug$FRTproteome == "N"& plug$FRTtranscriptome == "N") #38 proteins
+#only have RNAseq data on about half of them ... most are male body biased (compared to repro tract) so likely in the gonad - or general cellular proteins that could be coming from anywhere. Most don't have sex-biased expression
+
+```
+
+
+Look at differences in abundance of protein categories (esp SFP v. everything else) in wild type
+```{r}
+# 56.8% of SFP proteins identified in the plug are also expressed in the FRT transcriptome or proteome
+#Thus, it would be difficult to definitively state if they are male or female derived and may be both!
+length(which(plug$SFP == "Y" & (plug$FRTproteome == "Y" | plug$FRTtranscriptome == "Y")))/length(which(plug$SFP == "Y")) #180/317
+
+#63.4% of the sperm proteome is also found in the female!
+length(which(plug$sperm == "Y" & (plug$FRTproteome == "Y" | plug$FRTtranscriptome == "Y")))/length(which(plug$sperm == "Y")) #63.4
+
+#look at overlap of proteins identified in different categories
+venn <- euler(list( SFP = subset(plug$FBgn, plug$SFP == "Y"),
+            Sperm = subset(plug$FBgn, plug$sperm.all == "Y"),
+            FRT = subset(plug$FBgn, plug$FRTproteome == "Y" | plug$FRTtranscriptome == "Y")))
+
+#tiff('putative.origin.tiff', units="in", width=4, height=4, res=300)
+plot(venn, edges = c("red", "black", "#3E82FF"), fill=NA, labels=T, lwd=2.5)
+#dev.off()
+
+
+```
+
+Test whether SFPs are higher in abundance than other proteins
+```{r}
+# test whether there are significant differences between wild type and no glands in abundance between proteins that are called as SFPs or not
+# NOTE this assumes SFPs are not ALSO female or sperm
+
+#looking between SFP and not separated by wildtype and no gland females
+plug.long <- gather(plug, group, mean.abundance, controlMean:noglandMean, factor_key = T)
+
+ggplot(data=plug.long, aes(x=SFP, y=mean.abundance, fill=group)) +
+  geom_jitter(pch=19, alpha=0.8, position=position_jitterdodge())+
+    geom_boxplot(outlier.color = NA, alpha=0.5)+
+  scale_fill_manual(values = c("#79E97C", "#4851D3"))+
+    labs(x="SFP", y="Mean Abundance") +
+  theme_classic() 
+ggsave("SFP.abundance.diff.tiff", width=3, height=3, units="in")
+#for both it looks like those that are SFPs are higher
+
+# comparison of interest wild type plug - YES SFPs are higher in abundance than other proteins
+kruskal.test(mean.abundance ~ SFP, data=subset(plug.long, plug.long$group == "controlMean"))
+
+#also looked at the no glands plug and SFPs are also significantly higher
+kruskal.test(mean.abundance ~ SFP, data=subset(plug.long, plug.long$group == "noglandMean"))
+
+#Separating out SFP, sperm, female - this means that there will be overlaps between FRT and SFP but I think that is fine
+plug.long2 <- gather(plug, group, foundin, c("SFP", "female", "sperm"), factor_key = T)
+plug.long2 <- subset(plug.long2, plug.long2$group %in% c("SFP", "sperm", "female"))
+plug.long2 <- subset(plug.long2, plug.long2$foundin == "Y")
+plug.long2$group <- factor(plug.long2$group, levels=c("SFP", "sperm", "female"))
+
+ggplot(data=plug.long2, aes(x=group, y=controlMean, color=group))+
+  geom_jitter(pch=21,cex=0.75, alpha=0.35, fill="white", color="grey60", position=position_jitter(width=.2))+
+  geom_boxplot(outlier.color = NA, fill=NA)+
+  scale_color_manual(values=c("#FF0000","#262626","#A6A6A6"))+
+  labs(x="Protein Categories", y="Normalized log2 mean abundance")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggsave("CategoryDifference.tiff", width=3, height=3, units="in")
+```
+
+
+Look at representation of proteins (especially SFPs) by rank
+```{r}
+#determine protein ranks for wild type, if there are ties decide at random
+plug.rank <- plug
+plug.rank$control.rank <- rank(plug.rank$controlMean, ties.method="random", na.last = "keep")
+
+#label protein heirachically SFPs first, then sperm that are not SFPs, than FRT proteins that are not sperm or SFPs
+plug.rank$label <- ifelse(plug.rank$SFP.Wigby2020 == "Y", "confident", ifelse(plug.rank$candidateSFP.Wigby2020 == "Y", "candidate", ifelse(plug.rank$putativeSFP == "Y", "novel", "not")))
+plug.rank$alpha <- ifelse(plug.rank$SFP.Wigby2020 == "Y", 0.8, ifelse(plug.rank$candidateSFP.Wigby2020 == "Y", 0.8, ifelse(plug.rank$putativeSFP == "Y", 0.8, 0.4)))
+
+
+plug.rank <- plug.rank %>% gather(Sample, Area, Control1:NoGlands3)
+
+#tiff('control.rank.log.tiff', units="in", width=5.5, height=3.5, res=300)
+ggplot(subset(plug.rank, grepl("Control", plug.rank$Sample)), aes(x=control.rank, y=Area, group=control.rank, color=label, order=label)) +
+geom_boxplot(aes(alpha= alpha), lwd=0.16, outlier.size= 0.2)+
+scale_color_manual(values=c("#FF7F23","#FF0000", "grey75", "#A20000"))+
+  xlab("Ranked abundance")+
+  ylab("Normalized log2 protein abundance")+
+theme_classic() + theme(legend.position="none")
+#dev.off()
+```
+
+
+Look at the proportion of the total proteome abundance that each category takes up - here separating for the overlaps!
+```{r}
+#the proportion of abundance data are more accurate for the data when it is not log transformed
+plug.unlog <- plug
+plug.unlog$controlmean.unlog <- 2^plug.unlog$controlMean
+
+# calculate the proportion of the proteome that are SFPs regardless of overlaps with sperm/FRT
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "Y"))/ sum(plug.unlog$controlmean.unlog) #64.6
+
+#create new labels for proteins based on overlaps between categories
+total.proteome <- data.frame(c("SFP only", "SFP & Sperm", "SFP & Female", "SFP, Sperm & Female", "Sperm only", "Sperm & Female", "Female only", "Other"),
+c(sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "Y" & plug.unlog$sperm == "N" & plug.unlog$female == "N"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "Y" & plug.unlog$sperm == "Y" & plug.unlog$female == "N"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "Y" & plug.unlog$sperm == "N" & plug.unlog$female == "Y"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "Y" & plug.unlog$sperm == "Y" & plug.unlog$female == "Y"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "N" & plug.unlog$sperm == "Y" & plug.unlog$female == "N"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "N" & plug.unlog$sperm == "Y" & plug.unlog$female == "Y"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "N" & plug.unlog$sperm == "N" & plug.unlog$female == "Y"))/ sum(plug.unlog$controlmean.unlog),
+sum(subset(plug.unlog$controlmean.unlog, plug.unlog$SFP == "N" & plug.unlog$sperm == "N" & plug.unlog$female == "N"))/ sum(plug.unlog$controlmean.unlog)),
+c(rep("controlmean.unlog", 8)))
+colnames(total.proteome) <- c("Sample", "proportion", "proteome")
+sum(total.proteome$proportion)
+
+total.proteome$Sample <- factor(total.proteome$Sample, levels=rev(c(
+"SFP only", "SFP & Sperm", "SFP & Female", "SFP, Sperm & Female", "Sperm only", "Sperm & Female", "Female only", "Other")))
+
+#visualize proportions
+#I recolored them after because I wanted to do diagonal patterns. I treated proteins that overlapped between sperm and SFPs as just SFPs (which is consistent with how these are comonly characterized)
+ggplot(total.proteome, aes(x=proteome, y=proportion, fill=Sample))+
+  geom_bar(position="stack",stat="identity")+
+  theme_classic()
+
+ggplot(total.proteome, aes(x=proteome, y=proportion, fill=Sample))+
+  geom_bar(position="stack",stat="identity")+
+  theme_classic()+
+  theme(legend.position = "none")
+ggsave("Proportion.tiff", width=3.5, height=5, units="in")
+```
+
+
+Finally! compare the differences between the mating plug from wildtype and no glands females!
+```{r}
+# code preparing data and normalization prior to analysis is above in the section with sample relatedness visualization
+#repeated here just for reference:
+
+#f <- read.table ("P737_200720_Proteins.txt", header=T) #2458
+#f <- subset(f, f$Protein.FDR.Confidence..Combined == "High") #2108
+#f <- subset(f, f$X.Unique.Peptides >= 2) #1532
+#f <- subset(f, grepl("FBgn", f$Accession)) #1514
+#f <- f[,c(5,21:26)]
+#colnames(f) <- c("FBgn", "Control.1", "Control.2", "Control.3", "NoGlands.1", "NoGlands.2", "NoGlands.3")
+#f <- subset(f,rowSums(f[,c(2:7)] >= 0) == 6) #1508
+#e <- c(2:7)
+#row.names(f) <- f$FBgn
+#x <- readMSnSet2(f, e, sep = "\t")
+#x <- log(x, 2)
+#x <- normalise(x,"diff.median")
+
+
+#Sample<-gsub("Abundance\\.F1\\.\\d*[C|N]?\\.Sample\\.(\\d)\\.(\\w*)", "\\2.\\1", colnames(exprs(x)))
+#tmp <- data.frame(do.call(rbind, strsplit(Sample, "[.]")))
+#names(tmp) <- c("Sample","Replicate")
+#sampleNames(x)<-paste(tmp$Sample, tmp$Replicate, sep = "")
+#rownames(tmp) <- paste(tmp$Sample, tmp$Replicate, sep = "")
+#pData(x) <- tmp
+
+
+mat <- model.matrix(~ 0 + pData(x)$Sample)
+colnames(mat) <- c('Control','NoGlands')
+pData(x)$cmat <- mat
+
+##Functions
+dostats.Gland_NoGland <- function(x) {
+  cont.matrix <- makeContrasts(DE    = Control - NoGlands,
+                               levels   = pData(x)[, "cmat"])
+  fit <- lmFit(exprs(x), pData(x)[, "cmat"])
+  fit2 <- contrasts.fit(fit, cont.matrix)
+  fit2 <- eBayes(fit2)
+  tt1 <- topTable(fit2, adjust.method = "BH", coef = "DE", number = Inf)
+  return(tt1)
+}
+
+## Statistical analysis
+
+# Mated vs unmated
+res_Gland_NoGland <- dostats.Gland_NoGland(x)
+fData(x)$DE_Gland_NoGland <- res_Gland_NoGland[featureNames(x), ]
+
+plug.DE <- data.frame(FBgn = fData(x)$FBgn,
+                  round(exprs(x),2),
+                  log2_FC = fData(x)$DE_Gland_NoGland[, "logFC"],
+                  adj.P.Val = fData(x)$DE_Gland_NoGland[, "adj.P.Val"])
+
+#combine DE data with normalized counts, annotations and sex bias data (from Yang et al. 2018)
+plug.DE <- plug.DE[,c(1,8,9)]
+plug.DE <- full_join(plug, plug.DE, by=c("FBgn.original" = "FBgn"))
+```
+
+
+Look at the number of proteins differentially abundant and add helpful annotations
+```{r}
+#total number of differentially abundant proteins (logFC cutoff of 2)
+length(which(plug.DE$adj.P.Val < 0.05 & abs(plug.DE$log2_FC) >= 2))
+111/1508
+
+#Those higher in the wildtype female
+Glands.DE <- subset(plug.DE, plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 2) #36
+write.table(Glands.DE$FBgn, "Glands.DE.txt", row.names = F, col.names = F, quote = F )
+
+#higher in wildtype & logFC > 4
+length(which(Glands.DE$log2_FC > 4)) #12
+12/36#0.33
+
+#higher in wildtype & present in the female proteome or transcriptome
+length(which(Glands.DE$female == "Y"))#26
+26/36 #72.2% nearly 3/4 of all proteins are in the female
+
+
+#####higher in noglands######
+NoGlands.DE <- subset(plug.DE, plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC < -2)
+length(NoGlands.DE$FBgn)
+74/110
+
+write.table(NoGlands.DE$FBgn, "NoGlands.DE.txt", row.names = F, col.names = F, quote = F )
+
+#test if there are less gland proteins than 50%
+binom.test(x=36,n=110,p=1/2) #p < 0.001 there are less downregulated than would be expected
+
+#how many are in the female proteome or transcriptome?
+length(which(NoGlands.DE$female == "Y"))#70 damn so most of them
+
+#test if those in glandless female decrease more
+plug.DE$de <- ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 2, "Gland", 
+              ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC < -2, "NoGland", "NotDE"))
+
+kruskal.test(abs(log2_FC) ~ de, data=subset(plug.DE, plug.DE$de != "NotDE"))
+
+
+#visualize difference in log2FC
+ggplot(data=plug.DE, aes(x=de, y=abs(log2_FC), fill=de)) +
+  geom_jitter(pch=19, alpha=0.8, position=position_jitterdodge())+
+    geom_boxplot(outlier.color = NA, alpha=0.5)+
+  scale_fill_manual(values = c("#79E97C", "#4851D3", "grey"))+
+    labs(x="Significant", y="Log2 FC Abundance") +
+  theme_classic() 
+ggsave("Diff.abundance.diff.tiff", width=3, height=3, units="in")
+
+#glandless proteins with FC > 4 (only one)
+length(which(NoGlands.DE$log2_FC < -4)) #1
+1/75
+
+binom.test(x=1, n=75, p=12/36)
+
+write.table(plug.DE$FBgn, "plug.bkg.txt", row.names = F, col.names = F, quote = F )
+```
+
+Visualize differential abundance
+```{r}
+#label protease genes
+plug.DE$protease <- ifelse(plug.DE$FBgn %in% protease$V1, "Protease", "Not")
+
+#look at change in abundance as a function of mean abundance. The sig diff proteins in the glands are fairly average in expression with some high. I.e., not all super low which is good.
+ggplot(plug.DE, aes(x=allMean, y=log2_FC))+
+    geom_hline(yintercept= -2, lty=2, cex=0.5, col="black")+
+    geom_hline(yintercept= 2, lty=2, cex=0.5, col="black")+
+  geom_point(pch=21,cex = 1.75, bg= ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC < -2, "#4851D3", ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 2, "#79E97C", "gray70")), col="black", alpha= ifelse(plug.DE$adj.P.Val < 0.05 & abs(plug.DE$log2_FC) > 2, 0.8, 0.4))+
+  #geom_text_repel(aes(label=ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 4, as.character(V3),'')), cex= 2, segment.alpha = 0.5, col="black")+
+  theme_classic()+
+  ylab("Log2 Abundance Difference")+
+  xlab("Mean Abundance")
+
+#make volcano plot of proteins diff abundance and p-value 
+#label proteins with logFC > 4 in the wildtype direction and make it red for those that have a protease annotation
+ggplot(plug.DE, aes(x=log2_FC, y=-10*log10(adj.P.Val)))+
+    geom_hline(yintercept= -10*log10(0.05), lty=2, cex=0.5, col="black")+
+      geom_vline(xintercept= 2, lty=2, cex=0.5, col="black")+
+    geom_vline(xintercept= -2, lty=2, cex=0.5, col="black")+
+  geom_point(pch=21,cex = 1.75, bg= ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC < -2, "#4851D3", ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 2, "#79E97C", "gray90")), col="black", alpha= ifelse(plug.DE$adj.P.Val < 0.05 & abs(plug.DE$log2_FC) > 2, 0.8, 0.4))+
+  geom_text_repel(aes(label=ifelse(plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 4, as.character(GeneName),'')), cex= 2, segment.alpha = 0.5, col= ifelse(plug.DE$protease == "Protease", "red", "black"))+
+  theme_classic()+
+  ylab("-10log10(adjusted p value)")+
+  xlab("Log2 Abundance Difference")+
+  scale_x_continuous(limits=c(-6,8), breaks=seq(-6,8, by=2))
+ggsave("Plug.volcano.tiff", width=5, height=5, units="in")
+```
+
+To see whether the proteins that are differentially abundant are coming from females looking at their expression patterns across the FRT tissues
+```{r}
+tissue.plugUp <- subset(FRT.summary, FRT.summary$FBgn %in% subset(plug.DE$FBgn, plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC > 2)) #26 proteins in the FRT data
+26/36 #72% not bad!
+
+write.table(tissue.plugUp, "tissue.plugUp.csv", sep=",", col.names=T, row.names=F)
+
+
+#look at how many of the proteins are "FRT-biased" i.e., they have higher expression in an FRT tissue compared to the rest of the body
+length(which(tissue.plugUp$FRT.WF == "Higher"))
+22/26 #84.6% so most of them!
+
+#look at the number that have tissue-specific expression in either the spermatheca or parovaria
+length(which(tissue.plugUp$tissuemax == "ST" | tissue.plugUp$tissuemax == "PO"))
+13/26 #50% exactly half
+
+row.names(tissue.plugUp)<- tissue.plugUp$gene_symbol
+#add protease annotation
+tissue.plugUp$protease <- ifelse(tissue.plugUp$FBgn %in% protease$V1, "Protease", "Not")
+
+
+## set up annotations for the heatmap
+my_sample_col <- data.frame(Name = c("BUR", "OVD", "SR", "ST", "PO","FB", "WF"))
+row.names(my_sample_col) <- colnames(tissue.plugUp[,c(8:14)])
+ann_colors <- list(
+    tissuemax=c( "BUR" = bur.col,"OVD"= ovd.col,"SR"=  sr.col,"ST"=  st.col,"PO"= po.col,"FB"= fb.col, "WF"="white", "NotSpec" = "white"),              
+    protease=c("Protease"="red","Not"= "white"), 
+    Name=c("BUR"=bur.col, "OVD"= ovd.col, "PO"=po.col, "SR"=sr.col, "ST"=st.col, "FB" = fb.col, "WF" = "grey65"))
+
+#run heat map
+breaksList = seq(0, 20, by = 0.02)
+
+plugUp.heat <- pheatmap(scale(as.matrix(tissue.plugUp[,c(8:14)]), center=F, scale=F), 
+         clustering_distance_cols = "euclidean",
+         clustering_distance_rows = "euclidean",
+        clustering_method = "complete",
+         annotation_row = tissue.plugUp[,c(7,54)],
+         annotation_col = my_sample_col,
+        color = colorRampPalette(c("white", "grey75","grey50", "grey25",  "black"))
+(length(breaksList) - 1), 
+         breaks = breaksList,
+        annotation_colors = ann_colors,
+        labels_col = c("BUR", "OVD", "SR", "ST", "PO","FB", "WF"),
+        show_rownames = T,
+        annotation_legend = F,
+        annotation_names_row = F,
+        annotation_names_col = F,
+        border_color = NA,
+        legend =T)
+
+#tiff('plugUp.heat.tiff', units="in", width=5, height=10, res=300)
+plugUp.heat
+#dev.off()
+```
+
+Now looking at the same patters of FRT tissue expression for those proteins with greater abundance in the gland-less female plug
+```{r}
+tissue.plugDown <- subset(FRT.summary, FRT.summary$FBgn %in% subset(plug.DE$FBgn, plug.DE$adj.P.Val < 0.05 & plug.DE$log2_FC < -2)) #65
+65/75 #86.7% so the majority of these are also expressed in the FRT data!
+
+write.table(tissue.plugDown, "tissue.plugDown.csv", sep=",", col.names=T, row.names=F)
+
+length(which(tissue.plugDown$FRT.WF == "Higher"))
+47/65 #72.3% and the majority also have biased expression in the FRT compared to the whole body
+
+#however very few have specific expression in the glandular tissues (which is good because they are missing those tissues!)
+length(which(tissue.plugDown$tissuemax == "ST" | tissue.plugDown$tissuemax == "PO"))
+1/65 #1.5%
+
+#instead there are more that have specific expression in the non-glandular tissues
+length(which(tissue.plugDown$tissuemax == "OVD" | tissue.plugDown$tissuemax == "BUR" | tissue.plugDown$tissuemax == "SR"))
+11/65 #16.9
+
+#visualize with a heatmap
+row.names(tissue.plugDown)<- tissue.plugDown$gene_symbol
+
+my_sample_col <- data.frame(Name = c("BUR", "OVD", "SR", "ST", "PO","FB", "WF"))
+my_sample_row <- data.frame(tissuemax = tissue.plugDown$tissuemax)
+row.names(my_sample_col) <- colnames(tissue.plugDown[,c(8:14)])
+row.names(my_sample_row) <- row.names(tissue.plugDown[,c(8:14)])
+ann_colors <- list(
+     tissuemax=c("BUR" = bur.col,"OVD"= ovd.col,"SR"=  sr.col,"ST"=  st.col,"PO"= po.col,"FB"= fb.col, "WF"="white", "NotSpec" = "white"),              
+    Name=c("BUR"=bur.col, "OVD"= ovd.col, "PO"=po.col, "SR"=sr.col, "ST"=st.col, "FB" = fb.col, "WF" = "grey65"))
+
+tissue.plugDown <- tissue.plugDown[,c(8:14)]
+breaksList = seq(0, 20, by = 0.02)
+
+plugDown.heat <- pheatmap(scale(as.matrix(tissue.plugDown), center=F, scale=F), 
+         clustering_distance_cols = "euclidean",
+         clustering_distance_rows = "euclidean",
+        clustering_method = "complete",
+         annotation_row = my_sample_row,
+         annotation_col = my_sample_col,
+        color = colorRampPalette(c("white", "grey75","grey50", "grey25",  "black"))
+(length(breaksList) - 1), 
+         breaks = breaksList,
+        annotation_colors = ann_colors,
+        labels_col = c("BUR", "OVD", "SR", "ST", "PO","FB", "WF"),
+        show_rownames = T,
+        annotation_legend = F,
+        annotation_names_row = F,
+        annotation_names_col = F,
+        border_color = NA,
+        legend =T)
+
+#tiff('plugDown.heat.tiff', units="in", width=5, height=10, res=300)
+plugDown.heat
+#dev.off()
+```
+
+Look at how
+
+Looking at sex-bias can allow us to better understand dynamics of female and male-derived components
+```{r}
+#Log2FC as a function of sex-biased expression
+#coloring male-only (i.e., not expressed in the FRT) sperm and SFPs (including our newly annotated ones)
+
+ggplot(plug.DE, aes(x=log2_FC, y=RE.sexbias.log2FC))+
+    geom_hline(yintercept= -2, lty=2, cex=0.5, col="grey75")+
+    geom_hline(yintercept= 2, lty=2, cex=0.5, col="grey75")+
+    geom_vline(xintercept=2, lty=2, cex=0.5, col="#79E97C")+
+    geom_vline(xintercept=-2, lty=2,cex=0.5, col="#4851D3")+
+  geom_point(pch=21,cex = 1.75, bg= ifelse(plug.DE$SFP == "Y" & plug.DE$female == "N", "red", ifelse(plug.DE$sperm == "Y" & plug.DE$female == "N", "black", "grey")), col= "black", alpha= 0.8)+
+    #geom_point(pch=21,cex = 1.5, bg= ifelse(plug.DE$SFP == "Y", "red", ifelse(plug.DE$sperm == "Y", "black", "grey")), col= "black", alpha= 0.8)+
+  theme_classic()+
+  ylab("Reproductive Tract Sex Bias (Log2 Female/Male)")+
+  xlab("Log2 Abundance Difference")+
+  scale_x_continuous(limits=c(-6,8), breaks=seq(-6,8, by=2))
+ggsave("Plug.SexBias.tiff", width=6, height=4, units="in")
+```
+
+
+Look at the number of proteins for each that are either female or male biased
+```{r}
+#higher in wildetype and female-biased
+length(which(Glands.DE$RE.sexbias.log2FC > 2 & Glands.DE$RE.sexbias.pvalue < 0.05)) #17
+17/36
+#and just over half are female-biased in expression!
+
+#higher in wildtype and male-biased
+length(which(Glands.DE$RE.sexbias.log2FC < -2 & Glands.DE$RE.sexbias.pvalue < 0.05)) #11
+#so actually similar numbers that are male and female biased!
+#there is one of these that is male-biased and in the female category CG14694 ... it didn't have sig male RT biased expression so it didn't get called as an SFP but it might be one. Or at least it's likely being produced and contributed by both.
+
+length(which(Glands.DE$SFP == "Y"))#12
+12/36 
+# 3 of these are female-biased and were originially identified in the plug so are more likely to be female proteins I think...
+
+
+### for those higher in WT
+
+length(which(NoGlands.DE$RE.sexbias.log2FC > 2 & NoGlands.DE$RE.sexbias.pvalue < 0.05)) #23
+23/75
+#almost a third
+
+#higher in wildtype and male-biased
+length(which(NoGlands.DE$RE.sexbias.log2FC < -2 & NoGlands.DE$RE.sexbias.pvalue < 0.05)) #4
+#WOW very very few in comparison
+
+#are any of the SFPs?
+length(which(NoGlands.DE$SFP == "Y")) #2 very few again!
+
+```
+
+Compare mean abundance of sexubiased genes
+```{r}
+plug.DE$sexbias <- ifelse(plug.DE$RE.sexbias.log2FC >2 & plug.DE$RE.sexbias.pvalue < 0.05, "F", ifelse(plug.DE$RE.sexbias.log2FC < -2 & plug.DE$RE.sexbias.pvalue < 0.05, "M","Not"))
+
+female.plug.de <-plug.DE[plug.DE$sexbias == "F",]
+female.plug.de.long <- gather(female.plug.de, group, mean.abundance, controlMean:noglandMean, factor_key = T)
+
+ggplot(data=female.plug.de.long, aes(x=group, y=mean.abundance, color=group)) +
+  geom_jitter(pch=21, alpha=0.7, fill="grey", color="black", position=position_jitter(width=.2), cex=1)+
+    geom_boxplot(outlier.color = NA, fill=NA)+
+  scale_color_manual(values = c("#79E97C", "#4851D3"))+
+    labs(x="SFP", y="Mean Abundance") +
+      scale_y_continuous(limits=c(0,20), breaks=seq(0,20,by=5))+
+  theme_classic()+
+  theme(legend.position = "none")
+ggsave("female-bias.plug.diff.tiff", width=3, height=3, units="in")
+
+kruskal.test(mean.abundance ~ group, data=female.plug.de.long) #not significantly more abundant in female-biased genes
+
+binom.test(x=23, n=75, p=17/36)
+binom.test(x=17, n=36, p=23/75)
+
+mean(subset(plug.DE$log2_FC, plug.DE$sexbias == "F")) # pretty close to 0 -0.267 so they really aren't different
+
+female.plug.de$bullshit0 <- ifelse(female.plug.de$log2_FC > 0, "wildtype", "glandless")
+length(which(female.plug.de$bullshit0 == "wildtype")) #48
+length(which(female.plug.de$bullshit0 == "glandless")) #94
+length(female.plug.de$FBgn) #193
+```
+
+```{r}
+male.plug.de <-plug.DE[plug.DE$sexbias == "M",]
+male.plug.de.long <- gather(male.plug.de, group, mean.abundance, controlMean:noglandMean, factor_key = T)
+
+ggplot(data=male.plug.de.long, aes(x=group, y=mean.abundance, color=group)) +
+  geom_jitter(pch=21, alpha=0.7, fill="grey", color="black", position=position_jitter(width=.2), cex=1)+
+    geom_boxplot(outlier.color = NA, fill=NA)+
+  scale_color_manual(values = c("#79E97C", "#4851D3"))+
+    labs(x="SFP", y="Mean Abundance") +
+      scale_y_continuous(limits=c(0,20), breaks=seq(0,20,by=5))+
+  theme_classic()+
+  theme(legend.position = "none")
+ggsave("male-bias.plug.diff.tiff", width=3, height=3, units="in")
+
+kruskal.test(mean.abundance ~ group, data=male.plug.de.long) #not significantly more abundant in male-biased genes
+
+mean(subset(plug.DE$log2_FC, plug.DE$sexbias == "M")) # pretty close to 1.09 so they really aren't different
+
+length(which(male.plug.de$SFP == "Y"))
+length(which(male.plug.de$SFP == "Y"))/ length(male.plug.de$FBgn.original)
+```
+
+Closer look at SFPs and sperm abudnance differences
+Looking only at male-only SFPs and sperm to reduce confounding effects of female expression in evaluation
+```{r}
+#SFPs
+plug.DE.sfp <- plug.DE[plug.DE$SFP== "Y" & plug.DE$female == "N",]
+
+plug.SFP.long <- gather(plug.DE.sfp, group, mean.abundance, controlMean:noglandMean, factor_key = T)
+ 
+ggplot(data=plug.SFP.long, aes(x=group, y=mean.abundance, color=group)) +
+  geom_jitter(pch=21, alpha=0.7, fill="red", color="black", position=position_jitter(width=.2), cex=1)+
+    geom_boxplot(outlier.color = NA, fill=NA)+
+  scale_color_manual(values = c("#79E97C", "#4851D3"))+
+    labs(x="SFP", y="Mean Abundance") +
+      scale_y_continuous(limits=c(0,20), breaks=seq(0,20,by=5))+
+  theme_classic()+
+  theme(legend.position = "none")
+ggsave("SFP.plug.diff.tiff", width=3, height=3, units="in")
+
+kruskal.test(mean.abundance ~ group, data=plug.SFP.long)
+
+#sperm
+plug.DE.sperm <- plug.DE[plug.DE$sperm == "Y" & plug.DE$female == "N",]
+
+plug.sperm.long <- gather(plug.DE.sperm, group, mean.abundance, controlMean:noglandMean, factor_key = T)
+
+ggplot(plug.sperm.long, aes(x=group, y=mean.abundance, color=group)) +
+  geom_jitter(pch=21, alpha=0.7, fill="black", color="black", position=position_jitter(width=.2), cex=1)+
+    geom_boxplot(outlier.color = NA, fill=NA)+
+  scale_color_manual(values = c("#79E97C", "#4851D3"))+
+    labs(x="Sperm", y="Mean Abundance") +
+  theme_classic()+
+  theme(legend.position="none")+
+    scale_y_continuous(limits=c(0,20), breaks=seq(0,20,by=5))
+ggsave("plug.sperm.diff.tiff", width=3, height=3, units="in")
+
+kruskal.test(mean.abundance ~ group, data=plug.sperm.long)
+
+```
+
+Save main dataset!
+```{r}
+write.table(plug.DE, "Plug.DE.Jan2021.csv", col.names = T, row.names = F, sep=",")
+```
+
