@@ -1,0 +1,792 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+require(ggplot2)
+require(GGally)
+require(reshape2)
+require(lme4)
+require(compiler)
+require(parallel)
+require(boot)
+require(lattice)
+
+library(lmerTest)
+library(car)
+```
+
+Read in and clean data from preliminary eperiment
+```{r}
+mut <- read.table("FRTmut.txt", header=T, sep="\t")
+mut <- mut[c(1:350),]
+
+mut <- subset(mut, mut$ExcludeMismatch == "N")
+mut <- subset(mut, mut$FRTabnormal != "Y")
+mut <- subset(mut, mut$NoSpermXfer != "Y")
+mut <- subset(mut, mut$Mate != "N")
+mut <- mut %>% drop_na(Freeze)
+  
+mut$FRT.dissect <- ifelse(mut$ST == 2 & mut$PO ==2, "Control", ifelse(mut$ST == 2 & mut$PO == 0, "NoPO", ifelse(mut$ST == 0 & mut$PO == 0, "NoGlands", "NotDissected")))
+
+mut$FRT.genotype <- ifelse(mut$Cross == "63x64" & mut$eye == "dent", "NoPO_63x64", ifelse(mut$Cross == "63x64" & mut$eye == "full", "NoGlands_63x64", ifelse(mut$Cross == "63x4040" & mut$eye == "dent", "Control_63x4040", ifelse(mut$Cross == "63x4040" & mut$eye == "full", "NoGlands_63x4040", ifelse(mut$Cross == "63" & mut$eye == "dent", "Control_63", ifelse(mut$Cross == "63" & mut$eye == "full", "NoGlands_63", "WAT"))))))
+
+mut$FRT <- ifelse(mut$Cross == "63x64" & mut$eye == "dent", "NoPO", ifelse(mut$Cross == "63x64" & mut$eye == "full", "NoGlands", ifelse(mut$Cross == "63x4040" & mut$eye == "dent", "Control", ifelse(mut$Cross == "63x4040" & mut$eye == "full", "NoGlands", ifelse(mut$Cross == "63" & mut$eye == "dent", "Control", ifelse(mut$Cross == "63" & mut$eye == "full", "NoGlands", "WAT"))))))
+
+mut$FRT.genotype <- factor(mut$FRT.genotype, levels=c("Control_63", "Control_63x4040", "NoPO_63x64", "NoGlands_63", "NoGlands_63x4040", "NoGlands_63x64"))
+mut$FRT <- factor(mut$FRT, levels=c("Control", "NoPO", "NoGlands"))
+
+mut.sperm <- mut[,c(1:3, 40, 39, 38, 8, 24:30)]
+```
+
+Preliminary data: examine effect of glands on sperm in SR and ST
+See a significant reduction in sperm in the SR for gland-less females that annecdotally was associated with the visulaization of autofluorescent plug-like material in the bursa.
+Based on these results conducting the full experiment at a single timepoint 24 hrs post mating as plugs should definitely be ejected from the wildtype by then but differences are already and still visible in sperm storage number.
+```{r}
+mut.sperm <- subset(mut.sperm, mut.sperm$Freeze != 2)
+mut.sperm <- mut.sperm %>% drop_na(FRT.dissect)
+
+mut.sperm$STavg <- rowMeans(mut.sperm[,c("STsperm1", "STsperm2")], na.rm =T)
+
+mut.SRsperm.avg <- mut.sperm %>%
+  group_by(FRT, Freeze) %>%
+  summarize(avg=mean(SRsperm, na.rm = T), n=n(), sd=sd(SRsperm, na.rm=T), se=sd/sqrt(n))
+
+mut.SRsperm.avg$Freeze <- as.numeric(mut.SRsperm.avg$Freeze)
+
+#tiff("Prelim.SR.tiff", units="in", width=7, height=5, res=300)
+ggplot(mut.SRsperm.avg, aes(x=Freeze, y= avg, fill= FRT, color = FRT)) +
+    geom_smooth(method=lm, se=F, linetype="dashed", size = 0.75)+
+    geom_errorbar(aes(ymin= avg - se, ymax= avg +se), colour="black", width=.015, size=0.5)+
+    scale_fill_manual(values = c("white", "#1EE4CD","#4643C4"))+
+    scale_color_manual(values = c("black", "#1EE4CD","#4643C4"))+
+    geom_point(shape = 21, colour = "black", size=4) +
+    scale_x_continuous(name= "Time (hrs)", limits=c(0, 100), breaks=c(6, 24, 48, 72, 96)) +
+    labs(y="Sperm in Seminal Receptacle")+
+  theme_classic()
+#dev.off()
+
+mut.STsperm.avg <- mut.sperm %>%
+  group_by(FRT, Freeze) %>%
+  summarize(avg=mean(STavg, na.rm = T), n=n(), sd=sd(STavg, na.rm=T), se=sd/sqrt(n))
+
+mut.STsperm.avg$Freeze <- as.numeric(mut.STsperm.avg$Freeze)
+
+#tiff("Prelim.ST.tiff", units="in", width=7, height=5, res=300)
+ggplot(subset(mut.STsperm.avg, mut.STsperm.avg$FRT != "NoGlands"), aes(x=Freeze, y= avg, fill= FRT, color = FRT)) +
+    geom_smooth(method=lm, se=F, linetype="dashed", size = 0.75)+
+    geom_errorbar(aes(ymin= avg - se, ymax= avg +se), colour="black", width=.015, size=0.5)+
+    scale_fill_manual(values = c("white", "#1EE4CD"))+
+    scale_color_manual(values = c("black", "#1EE4CD"))+
+    geom_point(shape = 21, colour = "black", size=4) +
+    scale_x_continuous(name= "Time (hrs)", limits=c(0, 100), breaks=c(6, 24, 48, 72, 96)) +
+    labs(y="Average Sperm in Spermatheca")+
+  theme_classic()
+#dev.off
+
+
+```
+
+
+Read in and organize data from full experiment
+Data exploration: visualize differences in ejection among genotypes
+```{r}
+#read in data from different days that the experiment was conducted
+a <- read.table("1.LHMmale.12.21.2019.txt", header=T, sep="\t", na.strings=c("","NA"))
+b <- read.table("2.GFPmale.12.22.2019.txt", header=T, sep="\t", na.strings=c("","NA"))
+c <- read.table("3.LHMmale.12.27.2019.txt", header=T, sep="\t", na.strings=c("","NA"))
+d <- read.table("4.GFPmale.12.28.2019.txt", header=T, sep="\t", na.strings=c("","NA"))
+
+MutantEject <- rbind(a,b,c,d)
+
+#remove any data points that I mark to exclude while conducting the experiment
+MutantEject <- subset(MutantEject, MutantEject$Exclude != "Exclude" | is.na(MutantEject$Exclude))
+
+#calculate the number and proportion of females that eject or not based on dissection visualization of plug for each genotype
+eject.genotype <- MutantEject %>%
+  group_by(Genotype, Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.genotype <- subset(eject.genotype, eject.genotype$Ejec_Cat == "Eject" | eject.genotype$Ejec_Cat == "NoEject")
+eject.genotype <- na.omit(eject.genotype)
+
+eject.genotype <- eject.genotype %>%
+  group_by(Genotype) %>%
+  mutate(total = sum(eject.count))
+
+eject.genotype$proportion <- eject.genotype$eject.count / eject.genotype$total
+
+# visualize proportion and number of females that eject for each genotype
+eject.genotype$Ejec_Cat <- factor(eject.genotype$Ejec_Cat, levels=c("Eject","NoEject"))
+eject.genotype$Genotype <- factor(eject.genotype$Genotype, levels=c("LHM", "63+63-", "63+4040-", "63+64-", "63-63-", "63-4040-", "63-64-"))
+
+#tiff("Proportion.Eject.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = eject.count, x= Genotype, fill = Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "red")) +
+  labs(x="Genotype", y="Count") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("Count.Eject.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = proportion, x= Genotype, fill = rev(Ejec_Cat)), stat="identity") +
+  scale_fill_manual(values=c("black", "#ED232D")) +
+  labs(x="Genotype", y="Proportion") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+# really clear patterns of differences among genotypes consistent with their phenotype
+```
+
+Data exploration: Look at differences in plug ejection based on experimental day to ensure that there was no major block effects
+```{r}
+#calculate the number and proportion of females on each trial day that eject or not based on dissection visualization of plug for each genotype
+MutantEject <-MutantEject %>% 
+  mutate(Male_Trial = paste(Male, Trial, sep = "_"))
+
+eject.genotype <- MutantEject %>%
+  group_by(Genotype,Male_Trial, Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.genotype <- subset(eject.genotype, eject.genotype$Ejec_Cat == "Eject" | eject.genotype$Ejec_Cat == "NoEject")
+eject.genotype <- na.omit(eject.genotype)
+
+eject.genotype <- eject.genotype %>%
+  group_by(Genotype, Male_Trial) %>%
+  mutate(total = sum(eject.count))
+
+eject.genotype$proportion <- eject.genotype$eject.count / eject.genotype$total
+
+eject.genotype$Eject <- factor(eject.genotype$Ejec_Cat, levels=c("Eject","NoEject"))
+eject.genotype$Genotype <- factor(eject.genotype$Genotype, levels=c("LHM", "63+63-", "63+4040-", "63+64-", "63-63-", "63-4040-", "63-64-"))
+
+#tiff("Prop.Eject.Genotype.Trial.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = proportion, x= Genotype, fill = Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "red")) +
+  labs(x="Genotype", y="Proportion") +
+  facet_wrap(~Male_Trial, nrow=4)+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+# do not appear to be any concerning differences among trial days
+```
+
+
+Data exploration:Look at differences in plug ejection based on type of male (i.e., LHM wild type male or GFP male) to ensure that there was no major effect of male type
+```{r}
+#calculate the number and proportion of females mated to the two different types of males that eject or not based on dissection visualization of plug for each genotype
+
+eject.genotype <- MutantEject %>%
+  group_by(Genotype,Male, Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.genotype <- subset(eject.genotype, eject.genotype$Ejec_Cat == "Eject" | eject.genotype$Ejec_Cat == "NoEject")
+eject.genotype <- na.omit(eject.genotype)
+
+eject.genotype <- eject.genotype %>%
+  group_by(Genotype, Male) %>%
+  mutate(total = sum(eject.count))
+
+eject.genotype$proportion <- eject.genotype$eject.count / eject.genotype$total
+
+eject.genotype$Eject <- factor(eject.genotype$Ejec_Cat, levels=c("Eject","NoEject"))
+eject.genotype$Genotype <- factor(eject.genotype$Genotype, levels=c("LHM", "63+63-", "63+4040-", "63+64-", "63-63-", "63-4040-", "63-64-"))
+
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = proportion, x= Genotype, fill = Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "red")) +
+  labs(x="Genotype", y="Proportion") +
+  facet_wrap(~Male, nrow=4)+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# do not appear to be any concerning differences between male types
+```
+
+
+Analysis for manuscript: Calculate the number and proportions of data that have a discrepancy (i.e., the visualization of plug ejection did not match the observation of a plug following dissection)
+```{r}
+MutantEject.discrepancy <- MutantEject
+MutantEject.discrepancy$Phenotype <- factor(MutantEject.discrepancy$Phenotype, levels=c("LHM-WT","ControlGlands", "NoPO", "NoGlands"))
+
+length(which(MutantEject.discrepancy$Discrepancy == "X")) #59
+length(MutantEject.discrepancy$Ejec_Cat[!is.na(MutantEject.discrepancy$Ejec_Cat)]) #393
+59/393 #15.0
+
+MutantEject.discrepancy <- MutantEject.discrepancy[!is.na(MutantEject.discrepancy$Ejec_Cat),]
+eject.discrepancy <- MutantEject.discrepancy  %>%
+  group_by(Phenotype, Discrepancy) %>%
+  summarise(Count = n())
+
+eject.discrepancy$porp <- eject.discrepancy$Count / c(19,19,128,128,66,66, 180,180)
+
+eject.discrepancy <- as.data.frame(eject.discrepancy)
+mean(eject.discrepancy[c(1,3,5,7),4])*100 #11.7
+sd(eject.discrepancy[c(1,3,5,7),4])/sqrt(3)*100 #4.0
+```
+
+
+Analysis for manuscript: Look at differences based on Phenotype (using updated ejection determination based on visual confirmation following dissection)
+```{r}
+eject.Phenotype <- MutantEject %>%
+  group_by(Phenotype, Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.Phenotype <- subset(eject.Phenotype, eject.Phenotype$Ejec_Cat == "NoEject" | eject.Phenotype$Ejec_Cat == "Eject")
+eject.Phenotype <- na.omit(eject.Phenotype)
+
+eject.Phenotype <- eject.Phenotype %>%
+  group_by(Phenotype) %>%
+  mutate(total = sum(eject.count))
+
+eject.Phenotype$proportion <- eject.Phenotype$eject.count / eject.Phenotype$total
+
+eject.Phenotype$Eject <- factor(eject.Phenotype$Ejec_Cat, levels=c("Eject", "NoEject"))
+eject.Phenotype$Phenotype <- factor(eject.Phenotype$Phenotype, levels=c("LHM-WT", "ControlGlands", "NoPO", "NoGlands"))
+
+#tiff("Count.Eject.Phenotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.Phenotype) + 
+  geom_bar(aes(y = eject.count, x= Phenotype, fill = Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "red")) +
+  labs(x="Phenotype", y="Count") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+eject.Phenotype$Ejec_Cat <- factor(eject.Phenotype$Ejec_Cat)
+eject.Phenotype$Ejec_Cat <- factor(eject.Phenotype$Ejec_Cat, levels= c("NoEject", "Eject"))
+eject.Phenotype$Phenotype <- factor(eject.Phenotype$Phenotype)
+eject.Phenotype$Phenotype <- factor(eject.Phenotype$Phenotype, levels= c("LHM-WT", "ControlGlands", "NoPO", "NoGlands"))
+
+
+#tiff("Proportion.Eject.Phenotype.tiff", units="in", width=5, height=6, res=300)
+ggplot(subset(eject.Phenotype, eject.Phenotype$Phenotype != "LHM-WT")) + 
+  geom_bar(aes(y = proportion, x= Phenotype, fill = Ejec_Cat, color= Phenotype), stat="identity", cex=1.25) +
+  scale_fill_manual(values=c("black", "white")) +
+  scale_color_manual(values=c("#79E97C", "#00CFDF","#4851D3"))+
+  labs(x="Phenotype", y="Proportion") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(legend.position = "none")
+#dev.off()
+```
+
+
+run mixed model stats that look at effect of phenotype on whether or not ejection occurs taking into account random effects of:
+- female genotype
+- male type
+- trial day
+```{r}
+eject.m.dat <- subset(MutantEject, MutantEject$Ejec_Cat == "Eject" | MutantEject$Ejec_Cat == "NoEject")
+
+#stepwise removal of variables from model if not significantly different from previous model
+eject.all <- glmer(Ejec_Cat ~ Phenotype +  (1| Male) + (1|Trial) + (1|Genotype), data= eject.m.dat, family= binomial)
+summary(eject.all)
+
+eject.noMale <- glmer(Ejec_Cat ~ Phenotype + (1|Trial) + (1|Genotype), data= eject.m.dat, family= binomial)
+summary(eject.noMale)
+
+anova(eject.all, eject.noMale)
+
+eject.noMaleGenotype <- glmer(Ejec_Cat ~ Phenotype + (1|Trial), data= eject.m.dat, family= binomial)
+summary(eject.noMaleGenotype)
+
+anova(eject.all, eject.noMaleGenotype)
+anova(eject.noMale, eject.noMaleGenotype)
+
+eject.none <- glm(Ejec_Cat ~ Phenotype, data= eject.m.dat, family= binomial)
+summary(eject.none)
+
+anova(eject.all, eject.none)
+anova(eject.noMale, eject.none)
+anova(eject.noMaleGenotype, eject.none)
+
+#final model reported in manuscript
+eject.noMaleGenotype <- glmer(Ejec_Cat ~ Phenotype + (1|Trial), data= eject.m.dat, family= binomial)
+summary(eject.noMaleGenotype)
+
+```
+
+(2) Plug Ejected
+Analysis for manuscript: Calculate the number and proportions of females that eject the plug
+```{r}
+#subset full data set for those that either eject or don't eject
+eject.m.dat <- subset(MutantEject, MutantEject$Ejec_Cat == "Eject" | MutantEject$Ejec_Cat == "NoEject")
+
+write.table(eject.m.dat, "eject.m.dat.txt", col.names = T, row.names = F)
+
+#run full model
+eject.all <- glmer(Ejec_Cat ~ Phenotype +  (1| Male) + (1|Trial) + (1|Phenotype/Genotype), data= eject.m.dat, family= binomial)
+summary(eject.all)
+
+#male genotype explained the least variation so drop and compare to full model
+eject.noMale <- glmer(Ejec_Cat ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= eject.m.dat, family= binomial)
+summary(eject.noMale)
+
+anova(eject.all, eject.noMale, test="Chisq") #not sig
+#model without male is no different
+
+#Phenotype/Genotype explained the next least so drop and compare to no male and full model
+eject.noMaleGenotype <- glmer(Ejec_Cat ~ Phenotype + (1|Trial), data= eject.m.dat, family= binomial)
+summary(eject.noMaleGenotype)
+
+anova(eject.all, eject.noMaleGenotype) #not sig
+anova(eject.noMale, eject.noMaleGenotype) # not sig
+# model with out male and female genotype is no different
+
+#Try dropping all random effects and comparing to all
+eject.none <- glm(Ejec_Cat ~ Phenotype, data= eject.m.dat, family= binomial)
+summary(eject.none)
+
+anova(eject.all, eject.none) #not sig (but ~0.1)
+anova(eject.noMale, eject.none) #not sig (but ~0.06)
+anova(eject.noMaleGenotype, eject.none) #sig
+#so this model is significantly different then the one previous but not from the whole model...
+#it doesn't have any error codes which is a bonus... not sure how to interpret inclusion of the trial random variable
+
+eject.noMaleGenotype <- glmer(Ejec_Cat ~ Phenotype + (1|Trial), data= eject.m.dat, family= binomial)
+summary(eject.noMaleGenotype)
+# Going with model that includes trial
+# It fails to converge - negative eigen values...
+# This could be because the LHM phenotype (an additional control I don't show in the figures) ejects 100% of the time and has a small sample size? Oh - it also is only there in trial 3 & 4 (and not 1 & 2) which means that all phenotypes are not represented in all trials! That might be a reason?
+
+car::Anova(eject.noMaleGenotype)
+
+```
+
+Data exploration:Look at differences in catagorical timing of when the plug is ejected
+```{r}
+#remove those where the visualization of ejected plug is not consistent with the dissected visualization of the plug
+MutantEject.time <- subset(MutantEject, MutantEject$Discrepancy != "X" | is.na(MutantEject$Discrepancy))
+
+eject.genotype <- MutantEject.time %>%
+  group_by(Genotype, Time_Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.genotype <- subset(eject.genotype, eject.genotype$Time_Ejec_Cat != "ND" & eject.genotype$Time_Ejec_Cat != "")
+eject.genotype <- na.omit(eject.genotype)
+
+eject.genotype <- eject.genotype %>%
+  group_by(Genotype) %>%
+  mutate(total = sum(eject.count))
+
+eject.genotype$proportion <- eject.genotype$eject.count / eject.genotype$total
+
+eject.genotype$Time_Ejec_Cat <- factor(eject.genotype$Time_Ejec_Cat, levels=c("0-3", "3-6", "6-12", "12-24", "NoEject"))
+eject.genotype$Genotype <- factor(eject.genotype$Genotype, levels=c("LHM", "63+63-", "63+4040-", "63+64-", "63-63-", "63-4040-", "63-64-"))
+
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = eject.count, x= Genotype, fill = Time_Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "grey35", "grey65", "grey95", "red")) +
+  labs(x="Genotype", y="Count") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#tiff("Proportion.EjectTime.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.genotype) + 
+  geom_bar(aes(y = proportion, x= Genotype, fill = Time_Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "grey35", "grey65", "grey95", "red")) +
+  labs(x="Genotype", y="Count") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#######
+eject.Phenotype <- MutantEject.time %>%
+  group_by(Phenotype, Time_Ejec_Cat) %>%
+  summarise(eject.count = n())
+
+eject.Phenotype <- subset(eject.Phenotype, eject.Phenotype$Time_Ejec_Cat != "ND" & eject.Phenotype$Time_Ejec_Cat != "")
+eject.Phenotype <- na.omit(eject.Phenotype)
+
+eject.Phenotype <- eject.Phenotype %>%
+  group_by(Phenotype) %>%
+  mutate(total = sum(eject.count))
+
+eject.Phenotype$proportion <- eject.Phenotype$eject.count / eject.Phenotype$total
+
+eject.Phenotype$Time_Ejec_Cat <- factor(eject.Phenotype$Time_Ejec_Cat, levels=c("0-3", "3-6", "6-12", "12-24", "NoEject"))
+eject.Phenotype$Phenotype <- factor(eject.Phenotype$Phenotype, levels=c("LHM-WT", "ControlGlands", "NoPO", "NoGlands"))
+
+ggplot(eject.Phenotype) + 
+  geom_bar(aes(y = eject.count, x= Phenotype, fill = Time_Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "grey35", "grey65", "grey95", "red")) +
+  labs(x="Phenotype", y="Count") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#tiff("Proportion.EjectTime.Phenotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(eject.Phenotype) + 
+  geom_bar(aes(y = proportion, x= Phenotype, fill = Time_Ejec_Cat), stat="identity") +
+  scale_fill_manual(values=c("black", "grey35", "grey65", "grey95", "red")) +
+  labs(x="Phenotype", y="Proportion") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#this visualization of the data does not add substantively more information and is more confusing to look at then just the eject vs. not eject so not going to use this.
+```
+
+Analysis for manuscript: for those females that do eject the plug at what time do they eject
+```{r}
+MutantEject.time2 <- as.data.frame(MutantEject.time)
+#Note - MutantEject.time has already removed any points that are discrepancies
+MutantEject.time2$Phenotype <- factor(MutantEject.time2$Phenotype, levels=c("LHM-WT","ControlGlands", "NoPO", "NoGlands"))
+MutantEject.time2 <- subset(MutantEject.time2, MutantEject.time2$EjectTimeMin >= 0)
+#look only at those females that ejected the plug
+
+#calculate mean and standard error time to ejection for each category
+mutant.eject.sum <- MutantEject.time2 %>%
+  group_by(Phenotype) %>%
+  summarise(eject.count = n(), mean.time = mean(EjectTimeMin), sd.time = sd(EjectTimeMin))
+
+mutant.eject.sum$se.time <- mutant.eject.sum$sd.time / sqrt(mutant.eject.sum$eject.count)
+
+
+#tiff("Y.EjectTime.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(MutantEject.time2,aes(x = Genotype, y= EjectTimeMin, fill= Phenotype)) + 
+  geom_boxplot() +
+  geom_jitter()+
+  labs(x="Genotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("Y.EjectTime.Phenotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(MutantEject.time2,aes(x = Phenotype, y= EjectTimeMin, fill= Phenotype)) + 
+  geom_boxplot() +
+  geom_jitter()+
+  labs(x="Phenotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("EjectTime.Phenotype.tiff", units="in", width=5, height=6, res=300)
+ggplot(subset(MutantEject.time2, MutantEject.time2$Phenotype != "LHM-WT") ,aes(x = Phenotype, y= EjectTimeMin, color= Phenotype)) + 
+  geom_boxplot(outlier.color = NA, fill="white") +
+  geom_jitter(pch=21, alpha=0.35, fill="white", color="black", position=position_jitter(width=.2))+
+  scale_color_manual(values = c("#79E97C", "#00CFDF","#4851D3"))+
+  labs(x="Phenotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(legend.position = "none")
+dev.off()
+
+#make figure that has the "no eject" at a psuedo timepoint of 24hrs... combine this with the previous figure when finalizing the figures
+
+#need to get initial data because for previous visualizations the "NAs" were removed
+MutantEject.time3 <- MutantEject
+MutantEject.time3$Phenotype <- factor(MutantEject.time3$Phenotype, levels=c("LHM-WT","ControlGlands", "NoPO", "NoGlands"))
+
+MutantEject.time3$EjectTimeMin2 <- ifelse(MutantEject.time3$Ejec_Cat == "NoEject", 60*24, MutantEject.time3$EjectTimeMin)
+
+#tiff("EjectTime.Phenotype.noeject.tiff", units="in", width=5, height=6, res=300)
+ggplot(subset(MutantEject.time3, MutantEject.time3$Phenotype != "LHM-WT") ,aes(x = Phenotype, y= EjectTimeMin2, color= Phenotype)) + 
+  #geom_boxplot(outlier.color = NA, fill="white") +
+  geom_jitter(pch=21, alpha=0.35, fill="white", color="black", position=position_jitter(width=.2))+
+  scale_color_manual(values = c("#79E97C", "#00CFDF","#4851D3"))+
+  labs(x="Phenotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(legend.position = "none")
+#dev.off()
+```
+
+
+Data exploration: analyze differences in time to ejection - there really isn't enough data (the sample sizes are VERY unequal) and to much variation in the no glands to make this analysis a reasonable one to perform on this data.
+```{r}
+MutantEject.time <- subset(MutantEject, MutantEject$Discrepancy != "X" | is.na(MutantEject$Discrepancy))
+
+MutantEject.time2 <- as.data.frame(MutantEject.time)
+MutantEject.time2$Phenotype <- factor(MutantEject.time2$Phenotype, levels=c("LHM-WT","ControlGlands", "NoPO", "NoGlands"))
+MutantEject.time2 <- subset(MutantEject.time2, MutantEject.time2$EjectTimeMin >= 0)
+
+
+ejectTime.all <- lmer(EjectTimeMin ~ Phenotype + (1|Male) + (1|Trial) + (1|Phenotype/Genotype), data= MutantEject.time2)
+summary(ejectTime.all)
+
+
+ejectTime.noMale <- lmer(EjectTimeMin ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= MutantEject.time2)
+summary(ejectTime.noMale)
+
+anova(ejectTime.all, ejectTime.noMale, type="Chisq")
+
+ejectTime.noMaleTrial <- lmer(EjectTimeMin ~ Phenotype + (1|Phenotype/Genotype), data= MutantEject.time2)
+summary(ejectTime.noMale)
+
+anova(ejectTime.all, ejectTime.noMaleTrial)
+anova(ejectTime.noMale, ejectTime.noMaleTrial)
+
+
+ejectTime.noMale <- lmer(EjectTimeMin ~ Phenotype + (1|Phenotype/Genotype) + (1|Trial), data= MutantEject.time2)
+summary(ejectTime.noMale)
+```
+
+Supplementary anaylysis: examine the relationship between the time to ejection and number of sperm stored.
+There is no significant relationship (performing a correlation here)
+```{r}
+#tiff("EjectTime.SRsperm.tiff", units="in", width=5, height=3.5, res=300)
+ggplot(data=subset(MutantEject.time2, MutantEject.time2$SR >= 0 & MutantEject.time2$Phenotype != "LHM-WT"), aes(x=EjectTimeMin, y=SR)) +
+  geom_smooth(aes(colour= Phenotype), method=lm, lty=2, se=F)+
+  geom_point(aes(fill=Phenotype),pch=21, cex= 2) +
+  scale_fill_manual(values = c("white", "#1EE4CD","#4643C4"))+
+  scale_color_manual(values = c("grey", "#1EE4CD","#4643C4"))+
+    theme_classic()+
+  xlab("Time to ejection (min)")+
+  ylab("Number of sperm in seminal receptacle")+
+  theme(legend.position="none")
+#dev.off()
+
+#correlation in SR sperm stored wildtype FRT p=0.53
+cor.test(subset(MutantEject.time2$EjectTimeMin, MutantEject.time2$SR >= 0 & MutantEject.time2$Phenotype == "ControlGlands"), subset(MutantEject.time2$SR, MutantEject.time2$SR >= 0 & MutantEject.time2$Phenotype == "ControlGlands"), method=c("pearson"))
+
+#correlation in SR sperm stored noPO FRT FRT p=0.8
+cor.test(subset(MutantEject.time2$EjectTimeMin, MutantEject.time2$SR >= 0 & MutantEject.time2$Phenotype == "NoPO"), subset(MutantEject.time2$SR, MutantEject.time2$SR >= 0 & MutantEject.time2$Phenotype == "NoPO"), method=c("pearson"))
+
+
+MutantEject.time2$ST <- rowMeans(MutantEject.time2[,c(17,18)])
+
+#tiff("EjectTime.STsperm.tiff", units="in", width=5, height=3.5, res=300)
+ggplot(data=subset(MutantEject.time2, MutantEject.time2$ST >= 0 & MutantEject.time2$Phenotype != "LHM-WT"), aes(x=EjectTimeMin, y=ST)) +
+  geom_smooth(aes(colour= Phenotype), method=lm, lty=2, se=F)+
+  geom_point(aes(fill=Phenotype),pch=21, cex= 2) +
+  scale_fill_manual(values = c("white", "#1EE4CD","#4643C4"))+
+  scale_color_manual(values = c("grey", "#1EE4CD","#4643C4"))+
+    theme_classic()+
+    xlab("Time to ejection (min)")+
+  ylab("Average number of sperm in spermathecae")+
+  theme(legend.position="none")
+#dev.off()
+
+#correlation in SR sperm stored wildtype FRT p=0.2
+cor.test(subset(MutantEject.time2$EjectTimeMin, MutantEject.time2$ST >= 0 & MutantEject.time2$Phenotype == "ControlGlands"), subset(MutantEject.time2$ST, MutantEject.time2$ST >= 0 & MutantEject.time2$Phenotype == "ControlGlands"), method=c("pearson"))
+
+#correlation in SR sperm stored noPO FRT FRT p=0.4
+cor.test(subset(MutantEject.time2$EjectTimeMin, MutantEject.time2$ST >= 0 & MutantEject.time2$Phenotype == "NoPO"), subset(MutantEject.time2$ST, MutantEject.time2$ST >= 0 & MutantEject.time2$Phenotype == "NoPO"), method=c("pearson"))
+
+
+```
+
+(1) copulation duration
+Analysis for manuscript: do the FRT glands influence the duration of copulation (mate time)
+Data visualization and statistics
+```{r}
+#if mating was 0  or over 100 set to NA as there was an error in that data
+MutantEject$MateTimeMin[MutantEject$MateTimeMin == 0] <- NA
+MutantEject$MateTimeMin[MutantEject$MateTimeMin >= 100] <- NA
+
+MutantMating <- MutantEject[,c(1:4,6,11)]
+MutantMating <- subset(MutantMating, MutantMating$MateTimeMin >=0)
+
+MutantMating$Phenotype <- factor(MutantMating$Phenotype, levels=c("LHM-WT","ControlGlands", "NoPO", "NoGlands"))
+
+#tiff("MateTime.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(MutantMating,aes(x = Genotype, y= MateTimeMin, fill= Phenotype)) + 
+  geom_boxplot(outlier.color = NA) +
+  geom_jitter()+
+  labs(x="Genotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("MateTime.Phenotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(subset(MutantMating, MutantMating$Phenotype != "LHM-WT"),aes(x = Phenotype, y= MateTimeMin, color= Phenotype)) + 
+  geom_jitter(pch=21, alpha=0.35, fill="white",color="black", position=position_jitter(width=.2))+
+  geom_boxplot(outlier.color = NA, fill=NA) +
+  labs(x="Genotype", y="Copulation Duration") +
+  scale_color_manual(values = c("#79E97C", "#00CFDF","#4851D3"))+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+hist(MutantMating$MateTimeMin,probability=T, main="Histogram of Copulation Duration")
+lines(density(MutantMating$MateTimeMin),col=2)
+
+qqnorm(MutantMating$MateTimeMin, pch = 1, frame = FALSE)
+qqline(MutantMating$MateTimeMin, col = "steelblue", lwd = 2)
+
+
+mating.all <- lmer(MateTimeMin ~ Phenotype + (1|Male) + (1|Trial) + (1|Phenotype/Genotype), data= MutantMating)
+summary(mating.all)
+
+
+mating.noMale <- lmer(MateTimeMin ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= MutantMating)
+summary(mating.noMale)
+
+anova(mating.all, mating.noMale)
+
+mating.noMaleGenotype <- lmer(MateTimeMin ~ Phenotype + (1|Trial), data= MutantMating)
+summary(mating.noMaleGenotype)
+
+anova(mating.all, mating.noMaleGenotype)
+anova(mating.noMale, mating.noMaleGenotype)
+
+mating.none <- lm(MateTimeMin ~ Phenotype, data= MutantMating)
+summary(mating.none)
+
+anova(mating.all, mating.none)
+anova(mating.noMale, mating.none)
+anova(mating.noMaleGenotype,mating.none)
+
+mating.noMaleGenotype <- lmer(MateTimeMin ~ Phenotype + (1|Trial), data= MutantMating)
+summary(mating.noMaleGenotype)
+0.14*3
+
+car::Anova(mating.noMaleGenotype)
+
+```
+
+(3) Sperm storage in SR
+Analysis for manuscript: do the FRT glands influence the number of sperm in storage in the seminal receptacle
+Data visualization and statistics
+```{r}
+MutantSRcount <- MutantEject[,c(1:4,15,16)]
+MutantSRcount <- subset(MutantSRcount, MutantSRcount$SR >=0)
+
+MutantSRcount$Phenotype <- factor(MutantSRcount$Phenotype, levels=c( "ControlGlands","LHM-WT", "NoPO", "NoGlands"))
+
+MutantSRcount$Male <- factor(MutantSRcount$Male)
+MutantSRcount$Trial <- factor(MutantSRcount$Trial)
+
+#tiff("SRcount.Genotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(MutantSRcount, aes(x = Genotype, y= SR, fill= Phenotype)) + 
+  geom_boxplot(outlier.color = NA) +
+  geom_jitter()+
+  labs(x="Genotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("SRcount.Phenotype.tiff", units="in", width=5, height=5, res=300)
+ggplot(subset(MutantSRcount, MutantSRcount$Phenotype != "LHM-WT"), aes(x = Phenotype, y= SR, color= Phenotype)) + 
+  geom_jitter(pch=21, alpha=0.45, fill="white",color="black", position=position_jitter(width=.2))+
+  geom_boxplot(outlier.color = NA, fill="NA") +
+  labs(x="Genotype", y="Sperm in Seminal Receptacle") +
+  scale_color_manual(values = c("#79E97C", "#00CFDF","#4851D3"))+
+  scale_y_continuous(limits = c(0,600), breaks=seq(0,600, by = 100))+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+mutant.SR.sum <- MutantSRcount %>%
+  group_by(Phenotype) %>%
+  summarise(count = n(), mean = mean(SR), sd = sd(SR))
+
+mutant.SR.sum$se.time <- mutant.SR.sum$sd / sqrt(mutant.SR.sum$count)
+
+
+hist(MutantSRcount$SR,probability=T, main="Histogram of Copulation Duration")
+lines(density(MutantSRcount$SR),col=2)
+
+qqnorm(MutantSRcount$SR, pch = 1, frame = FALSE)
+qqline(MutantSRcount$SR, col = "steelblue", lwd = 2)
+
+shapiro.test(MutantSRcount$SR)
+
+SR.all <- lmer(SR ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= MutantSRcount)
+summary(SR.all)
+
+
+SR.noTrial <- glmer(SR ~ Phenotype + (1|Phenotype/Genotype), data= MutantSRcount, family=poisson)
+summary(SR.noTrial)
+
+anova(SR.all, SR.noTrial)
+
+SR.all <- lmer(SR ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= MutantSRcount)
+summary(SR.all)
+0.0121*3
+
+car::Anova(SR.all)
+```
+
+(4) sperm stored in ST
+Analysis for manuscript: do the FRT glands influence the number of sperm in storage in the spermatheca
+Data visualization and statistics
+
+```{r}
+MutantSTavg <- MutantEject[,c(1:4,15,17,18)]
+MutantSTavg$ST <- round(rowMeans(MutantSTavg[,c(6,7)],na.rm = T),0)
+MutantSTavg <- subset(MutantSTavg, MutantSTavg$ST >=0)
+
+MutantSTavg$Phenotype <- factor(MutantSTavg$Phenotype, levels=c("ControlGlands","LHM-WT", "NoPO", "NoGlands"))
+
+
+#tiff("MateTime.Genotype.tiff", units="in", width=3.5, height=5, res=300)
+ggplot(MutantSTavg, aes(x = Genotype, y= ST, fill= Phenotype)) + 
+  geom_boxplot(outlier.color = NA) +
+  geom_jitter()+
+  labs(x="Genotype", y="Time to Ejection (Min)") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+#tiff("STcount.Phenotype.tiff", units="in", width=4, height=5, res=300)
+ggplot(subset(MutantSTavg, MutantSTavg$Phenotype != "LHM-WT"),aes(x = Phenotype, y= ST, color= Phenotype)) + 
+  geom_jitter(pch=21, alpha=0.35, fill="white",color="black", position=position_jitter(width=.2))+
+  geom_boxplot(outlier.color = NA, fill=NA) +
+  labs(x="Genotype", y="Mean Sperm in Spermatheca") +
+  scale_color_manual(values = c("#79E97C", "#00CFDF","#4851D3"))+
+  scale_y_continuous(limits = c(0,200), breaks=seq(0,200, by = 25))+
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#dev.off()
+
+mutant.ST.sum <- MutantSTavg %>%
+  group_by(Phenotype) %>%
+  summarise(count = n(), mean = mean(ST), sd = sd(ST))
+
+mutant.ST.sum$se.time <- mutant.ST.sum$sd / sqrt(mutant.ST.sum$count)
+
+
+hist(MutantSTavg$ST,probability=T, main="Histogram of Copulation Duration")
+lines(density(MutantSTavg$ST),col=2)
+
+qqnorm(MutantSTavg$ST, pch = 1, frame = FALSE)
+qqline(MutantSTavg$ST, col = "steelblue", lwd = 2)
+
+shapiro.test(MutantSTavg$ST)
+
+
+ST.all <- lmer(ST ~ Phenotype + (1|Trial) + (1|Phenotype/Genotype), data= MutantSTavg)
+summary(ST.all)
+
+ST.noTrial <- lmer(ST ~ Phenotype + (1|Phenotype/Genotype), data= MutantSTavg)
+summary(ST.noTrial)
+
+anova(ST.all, ST.noTrial, type="Chisq")
+
+ST.noTrialGenotype <- lm(ST ~ Phenotype, data= MutantSTavg)
+summary(ST.noTrial)
+
+anova(ST.all, ST.noTrialGenotype)
+anova(ST.noTrial, ST.noTrialGenotype, type="Chisq")
+
+ST.noTrialGenotype <- lm(ST ~ Phenotype, data= MutantSTavg)
+summary(ST.noTrial)
+0.269*2
+
+car::Anova(ST.noTrialGenotype)
+
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
